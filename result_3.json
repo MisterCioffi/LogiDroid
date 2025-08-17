@@ -1,0 +1,233 @@
+{
+  "source_file": "3.xml",
+  "timestamp": "2025-08-17T16:19:25.516624",
+  "total_buttons": 15,
+  "total_inputs": 0,
+  "elements": [
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/photo",
+      "bounds": {
+        "x": 539,
+        "y": 386,
+        "width": 255,
+        "height": 255
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/starred_icon",
+      "bounds": {
+        "x": 865,
+        "y": 578,
+        "width": 95,
+        "height": 95
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/communication_card_primary_icon",
+      "bounds": {
+        "x": 246,
+        "y": 810,
+        "width": 95,
+        "height": 95
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/communication_card_alternate_icon",
+      "bounds": {
+        "x": 540,
+        "y": 810,
+        "width": 95,
+        "height": 95
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/communication_card_third_icon",
+      "bounds": {
+        "x": 833,
+        "y": 810,
+        "width": 95,
+        "height": 95
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "",
+      "bounds": {
+        "x": 540,
+        "y": 1056,
+        "width": 1078,
+        "height": 184
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/icon",
+      "bounds": {
+        "x": 736,
+        "y": 1056,
+        "width": 84,
+        "height": 84
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/icon_alternate",
+      "bounds": {
+        "x": 852,
+        "y": 1056,
+        "width": 84,
+        "height": 84
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/third_icon",
+      "bounds": {
+        "x": 968,
+        "y": 1056,
+        "width": 84,
+        "height": 84
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "Cronologia",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/communication_history_button",
+      "bounds": {
+        "x": 540,
+        "y": 1265,
+        "width": 756,
+        "height": 100
+      },
+      "clickable": true,
+      "editable": false,
+      "label": "Cronologia"
+    },
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "",
+      "bounds": {
+        "x": 73,
+        "y": 136,
+        "width": 147,
+        "height": 147
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "",
+      "hint": "",
+      "resource_id": "",
+      "bounds": {
+        "x": 1018,
+        "y": 136,
+        "width": 124,
+        "height": 147
+      },
+      "clickable": true,
+      "editable": false,
+      "label": ""
+    },
+    {
+      "type": "button",
+      "text": "Codice QR",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/menu_qrcode",
+      "bounds": {
+        "x": 189,
+        "y": 2020,
+        "width": 326,
+        "height": 147
+      },
+      "clickable": true,
+      "editable": false,
+      "label": "Codice QR"
+    },
+    {
+      "type": "button",
+      "text": "Modifica",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/menu_edit",
+      "bounds": {
+        "x": 540,
+        "y": 2020,
+        "width": 325,
+        "height": 147
+      },
+      "clickable": true,
+      "editable": false,
+      "label": "Modifica"
+    },
+    {
+      "type": "button",
+      "text": "Condividi",
+      "hint": "",
+      "resource_id": "com.samsung.android.app.contacts:id/menu_share",
+      "bounds": {
+        "x": 891,
+        "y": 2020,
+        "width": 325,
+        "height": 147
+      },
+      "clickable": true,
+      "editable": false,
+      "label": "Condividi"
+    }
+  ]
+}
