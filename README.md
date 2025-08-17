@@ -1,243 +1,341 @@
-# 🧠 LogiDroid - Sistema Completo di Automazione Android con LLM
+# 🧠 LogiDroid - Sistema Avanzato di Automazione Android con LLM
 
-LogiDroid è un sistema avanzato che combina cattura UI, analisi intelligente e automazione Android tramite ADB, con integrazione LLM per automazione guidata da linguaggio naturale.
+LogiDroid è un sistema all'avanguardia che combina cattura UI, analisi intelligente e automazione Android tramite ADB, con integrazione LLM locale per esplorazione autonoma e automazione guidata da intelligenza artificiale.
 
-## 🌟 Caratteristiche
+## 🌟 Caratteristiche Principali
 
-- **🔍 Cattura UI**: Estrae automaticamente la struttura dell'interfaccia Android
-- **📊 Analisi Intelligente**: Converte XML UIAutomator in JSON strutturato con etichette contestuali
-- **🤖 Integrazione LLM**: Genera prompt ottimizzati per Large Language Models
-- **⚡ Automazione ADB**: Esegue azioni sui dispositivi Android basandosi sui dati estratti
-- **🎯 Workflow Completo**: Pipeline automatica da cattura a esecuzione
+- **🔍 Cattura Completa**: Screenshot PNG + struttura UI XML in formato JSON
+- **🧠 Memoria Intelligente**: Sistema di cronologia azioni per mantenere il filo conduttore
+- **🤖 LLM Locale**: Integrazione con Ollama per decisioni autonome
+- **⚡ Automazione Precisa**: Click centrati e gestione dinamica delle interfacce
+- **🎯 Esplorazione Autonoma**: L'LLM esplora le app mantenendo la logica delle azioni
+- **� Targeting Avanzato**: Riconoscimento intelligente dei controlli Android
+
+## 🆕 Novità v2.0
+
+### ✨ Sistema di Memoria Avanzato
+- **Cronologia Persistente**: Mantiene le ultime 10 azioni in `prompts/action_history.json`
+- **Filo Conduttore**: L'LLM ricorda cosa ha fatto e continua logicamente
+- **Contesto Dinamico**: Riconoscimento automatico del tipo di schermata
+
+### 🎯 Targeting Migliorato
+- **Click Centrati**: Calcolo automatico del centro degli elementi
+- **Filtri Dimensionali**: Esclude elementi troppo piccoli (< 10px)
+- **Coordinate Precise**: Sistema di bounds ottimizzato
+
+### 🤖 LLM Ottimizzato
+- **Ollama Integration**: LLM locale llama3.2:3b con parametri ottimizzati
+- **Parsing Robusto**: Gestione intelligente delle risposte dell'LLM
+- **Variabilità Controllata**: Temperature 0.7, repeat_penalty 1.2 per evitare loop
 
 ## 📁 Struttura del Progetto
 
 ```
 LogiDroid/
-├── xml_to_json.py           # Conversione XML → JSON (183 righe, ottimizzato)
-├── prompt_generator.py       # Generatore prompt per LLM
-├── adb_automator.sh         # Automazione ADB
-├── llm_integration.sh       # Script integrazione completa
-├── llm_simulator.py         # Simulatore LLM per testing
-├── demo.sh                 # Script demo workflow completo
-├── config.sh               # Configurazioni
-├── ui_captures/            # Directory catture UI
-├── prompts/               # Directory prompt generati
-└── README.md              # Questa documentazione
+├── 🚀 Core System
+│   ├── logidroid_complete.sh     # 🎯 Script principale completo
+│   ├── llm_local.py              # 🧠 LLM con sistema memoria avanzato  
+│   ├── prompt_generator.py       # 📝 Generatore prompt con cronologia
+│   ├── adb_automator.sh          # ⚡ Automazione ADB precisa
+│   └── xml_to_json.py            # 🔄 Convertitore interfacce
+├── 📁 Working Directories
+│   ├── prompts/                  # 🧠 Sistema memoria LLM
+│   ├── ui_captures/              # 📱 Catture interfacce XML
+│   └── screenshots/              # 📸 Screenshot PNG
+├── ⚙️ Configuration
+│   ├── config.sh                 # ⚙️ Configurazioni sistema
+│   ├── extraction.sh             # 🔧 Script estrazione legacy
+│   └── llm_integration.sh        # 🔗 Integrazione LLM legacy
+└── 📖 Documentation
+    ├── README.md                 # 📚 Questa documentazione
+    └── .gitignore               # 🚫 File ignorati da Git
 ```
 
 ## 🚀 Quick Start
 
 ### 1. Prerequisiti
+
+#### Software Richiesto
 ```bash
 # Android Debug Bridge
 brew install android-platform-tools  # macOS
 # oppure installa Android SDK
 
-# Python 3
-python3 --version  # Verifica installazione
+# Python 3.9+
+python3 --version
 
-# Dispositivo Android in modalità sviluppatore
-adb devices
+# Ollama per LLM locale
+brew install ollama
+ollama pull llama3.2:3b
 ```
 
-### 2. Workflow Completo
+#### Setup Dispositivo Android
 ```bash
-# Connetti dispositivo Android e naviga alla schermata desiderata
-# Esegui workflow completo
-./llm_integration.sh workflow "Aggiungi nuovo contatto con nome Mario Rossi"
+# Abilita Opzioni Sviluppatore e Debug USB
+adb devices  # Verifica connessione
 
-# Output:
-# - ui_captures/session_YYYYMMDD_HHMMSS.xml
-# - session_YYYYMMDD_HHMMSS.json  
-# - prompts/session_YYYYMMDD_HHMMSS_task.md
+# Autorizza il computer quando richiesto dal dispositivo
 ```
 
-### 3. Invia Prompt al LLM
+### 2. Utilizzo Immediato
+
+#### 🎯 Esplorazione Autonoma (Consigliato)
 ```bash
-# Copia il prompt generato
-cat prompts/session_YYYYMMDD_HHMMSS_task.md
+# Naviga all'app che vuoi esplorare sul dispositivo
+# Avvia l'esplorazione autonoma
+./logidroid_complete.sh
 
-# Incolla nel tuo LLM preferito (ChatGPT, Claude, ecc.)
-# Ottieni risposta JSON con steps di automazione
+# L'LLM inizierà ad esplorare l'app automaticamente
+# Ogni azione viene memorizzata per mantenere il filo conduttore
 ```
 
-### 4. Esegui Automazione
+#### 📱 Workflow Completo Manual
 ```bash
-# Usa la risposta LLM per automazione
-./adb_automator.sh session_YYYYMMDD_HHMMSS.json click_button "Salva"
-./adb_automator.sh session_YYYYMMDD_HHMMSS.json fill_field "Nome" "Mario Rossi"
+# 1. Cattura interfaccia corrente
+adb shell uiautomator dump /sdcard/ui_dump.xml
+adb pull /sdcard/ui_dump.xml ui_captures/current.xml
+
+# 2. Converti in JSON
+python3 xml_to_json.py ui_captures/current.xml result.json
+
+# 3. Genera prompt con memoria
+python3 prompt_generator.py result.json
+
+# 4. Esegui azione specifica
+./adb_automator.sh result.json click_button "Nome Bottone"
+./adb_automator.sh result.json fill_field "Nome Campo" "Valore"
 ```
 
-## 🛠️ Utilizzo Avanzato
+## 📊 Output del Sistema
 
-### Modalità Interattiva
-```bash
-./llm_integration.sh interactive
+### File Generati
 ```
-Menu interattivo per tutte le funzionalità.
-
-### Cattura UI Manuale
-```bash
-# Cattura UI corrente
-./llm_integration.sh capture my_screen
-# Genera: ui_captures/my_screen.xml
+📸 screenshots/screen_TIMESTAMP.png    # Screenshot PNG dell'interfaccia
+📱 ui_captures/current_TIMESTAMP.xml   # Struttura UI in formato XML
+📋 result_current_TIMESTAMP.json       # Dati strutturati per l'LLM
+🧠 prompts/action_history.json         # Cronologia azioni (max 10)
+📝 prompts/last_action.txt             # Ultima azione eseguita
 ```
 
-### Conversione XML Esistente
-```bash
-# Converte file XML esistente
-./llm_integration.sh convert ui_captures/my_screen.xml my_data.json
-```
-
-### Generazione Prompt Specifici
-
-#### Task Automation
-```bash
-./llm_integration.sh prompt my_data.json task "Compila form registrazione utente"
-```
-
-#### UI Understanding
-```bash
-./llm_integration.sh prompt my_data.json understand
-```
-
-#### Troubleshooting
-```bash
-./llm_integration.sh prompt my_data.json troubleshoot "Campo email non accetta input"
-```
-
-#### Test Scenarios
-```bash
-python3 prompt_generator.py my_data.json test
-```
-
-## 📊 Formato Dati
-
-### JSON Output Esempio
+### Esempio JSON Generato
 ```json
 {
-  "source_file": "2.xml",
-  "timestamp": "2025-08-17T15:23:23.520761",
-  "total_buttons": 6,
-  "total_inputs": 4,
+  "source_file": "current_1234567890.xml",
+  "timestamp": "2025-08-17T19:30:00.000000",
+  "total_buttons": 15,
+  "total_inputs": 3,
   "elements": [
     {
-      "type": "edit_text",
-      "text": "",
-      "hint": "",
-      "resource_id": "com.samsung.android.app.contacts:id/nameEdit",
-      "bounds": { "x": 501, "y": 680, "width": 715, "height": 92 },
+      "type": "button",
+      "text": "Salva",
+      "content_desc": "Salva contatto",
+      "bounds": {"x": 540, "y": 2020, "width": 325, "height": 147},
       "clickable": true,
+      "label": "Salva"
+    },
+    {
+      "type": "input",
+      "text": "",
+      "hint": "Inserisci nome",
+      "bounds": {"x": 159, "y": 491, "width": 800, "height": 92},
       "editable": true,
-      "label": "Nome"
+      "label": "Nome (VUOTO) [pos:159,491]"
     }
   ]
 }
 ```
 
-### Formato Risposta LLM Attesa
+## 🧠 Sistema di Memoria Avanzato
+
+### Cronologia delle Azioni
+```json
+[
+  {
+    "timestamp": "2025-08-17T19:30:00.000000",
+    "action": "CLICK:Aggiungi",
+    "screen": "Schermata lista contatti"
+  },
+  {
+    "timestamp": "2025-08-17T19:30:15.000000", 
+    "action": "FILL:Nome:Mario Rossi",
+    "screen": "Schermata di creazione contatto"
+  },
+  {
+    "timestamp": "2025-08-17T19:30:30.000000",
+    "action": "CLICK:Salva", 
+    "screen": "Schermata di creazione contatto"
+  }
+]
+```
+
+### Prompt Generato con Memoria
+```
+🤖 ESPLORAZIONE AUTONOMA ANDROID - MANTIENI IL FILO CONDUTTORE
+
+📱 AZIONI PRECEDENTI (mantieni la logica!):
+1. CLICK:Aggiungi → Schermata di creazione contatto
+2. FILL:Nome:Mario Rossi → Schermata di creazione contatto
+
+📍 SCHERMATA ATTUALE: Schermata di creazione contatto
+
+🎯 OBIETTIVO: Esplora l'app in modo logico e coerente
+• Ricorda le azioni precedenti e continua il percorso
+• Se hai appena compilato campi, considera di salvare
+• Se sei in una lista, prova a aprire elementi
+• Evita di ripetere sempre le stesse azioni
+```
+
+## 🔧 API e Comandi
+
+### Script Principale
+```bash
+./logidroid_complete.sh              # Esplorazione autonoma completa
+```
+
+### Componenti Individuali
+```bash
+# Cattura e conversione
+python3 xml_to_json.py input.xml output.json
+
+# Generazione prompt con memoria
+python3 prompt_generator.py result.json [azione_precedente]
+
+# LLM locale con Ollama
+python3 llm_local.py result.json
+
+# Automazione ADB
+./adb_automator.sh result.json click_button "Nome Bottone"
+./adb_automator.sh result.json fill_field "Nome Campo" "Valore"
+./adb_automator.sh result.json list_elements
+```
+
+## ⚙️ Configurazione LLM
+
+### Parametri Ollama Ottimizzati
 ```json
 {
-  "steps": [
-    {
-      "action": "fill_field",
-      "target": "Nome",
-      "value": "Mario Rossi",
-      "description": "Inserisce il nome del contatto"
-    },
-    {
-      "action": "click_button", 
-      "target": "Salva",
-      "description": "Salva il nuovo contatto"
-    }
-  ],
-  "confidence": "high",
-  "notes": "Verifica che tutti i campi obbligatori siano compilati"
+  "model": "llama3.2:3b",
+  "temperature": 0.7,        // Variabilità per evitare loop
+  "repeat_penalty": 1.2,     // Penalità ripetizioni
+  "top_p": 0.9,             // Diversità token
+  "num_predict": 50         // Lunghezza risposta
 }
 ```
 
-## 🎯 Tipi di Prompt
-
-### 1. Task Completion
-**Scopo**: Automazione guidata per completare task specifici
-**Input**: Descrizione task in linguaggio naturale
-**Output**: Sequenza di azioni JSON per automazione
-
-### 2. UI Understanding  
-**Scopo**: Analisi e comprensione dell'interfaccia corrente
-**Input**: Stato UI corrente
-**Output**: Analisi funzionalità, workflow, problemi UX
-
-### 3. Troubleshooting
-**Scopo**: Risoluzione problemi di automazione
-**Input**: Descrizione errore/problema
-**Output**: Analisi cause, soluzioni, prevenzione
-
-### 4. Test Scenarios
-**Scopo**: Generazione scenari di test completi
-**Input**: Stato UI
-**Output**: Happy path, edge cases, error scenarios
-
-## 🔧 Comandi ADB Disponibili
-
-### Automazione Basica
-```bash
-./adb_automator.sh <json_file> click_button <nome>
-./adb_automator.sh <json_file> fill_field <nome> <valore>
-./adb_automator.sh <json_file> list_elements
+### Formato Risposte LLM
+```
+CLICK:Nome_Bottone          # Clicca un bottone
+FILL:Nome_Campo:Valore      # Compila un campo
 ```
 
-### Azioni Manuali Avanzate
+## 🔍 Risoluzione Problemi
+
+### LLM Non Risponde
 ```bash
-# Funzioni disponibili nel terminal:
-adb_click 500 300 "centro schermo"
-adb_type_text "Hello World"
-adb_clear_field 400 200
-adb_long_click 600 400
-adb_scroll up 3
-adb_back
-adb_home
+# Verifica Ollama
+curl http://localhost:11434/api/tags
+brew services restart ollama
 ```
 
-## 📱 App Supportate
-
-Il sistema riconosce automaticamente:
-- Samsung Contacts
-- Android Contacts
-- WhatsApp
-- Instagram
-- Facebook
-- Gmail
-- Settings Android
-- App generiche Android
-
-## 🔍 Esempi Pratici
-
-### Esempio 1: Aggiunta Contatto
+### Dispositivo Non Connesso
 ```bash
-# 1. Apri app Contatti e vai a "Nuovo Contatto"
-# 2. Cattura UI
-./llm_integration.sh workflow "Aggiungi contatto Mario Rossi telefono 123-456-789"
-# 3. Invia prompt al LLM
-# 4. Esegui automazione risultante
+# Verifica connessione ADB
+adb devices
+adb kill-server && adb start-server
 ```
 
-### Esempio 2: Debugging Campo Input
+### Click Non Precisi
+Il sistema ora usa **click centrati** automaticamente:
+- Calcola centro elemento: `center_x = x + width/2`
+- Filtra elementi troppo piccoli: `width > 10 && height > 10`
+
+### Memoria Non Funziona
 ```bash
-# 1. Cattura UI con problema
-./llm_integration.sh capture debug_session
-./llm_integration.sh convert ui_captures/debug_session.xml debug.json
-# 2. Genera prompt troubleshooting
-./llm_integration.sh prompt debug.json troubleshoot "Campo email non risponde ai click"
-# 3. Analizza con LLM la risposta
+# Verifica cartelle
+ls -la prompts/
+# Deve essere scrivibile per action_history.json e last_action.txt
 ```
 
-### Esempio 3: Test Completo Form
+## 🎯 Esempi d'Uso
+
+### Esplorazione App Contatti
 ```bash
-# 1. Cattura form da testare
-./llm_integration.sh capture test_form
-./llm_integration.sh convert ui_captures/test_form.xml test.json
+# 1. Apri app Contatti
+# 2. Esegui LogiDroid
+./logidroid_complete.sh
+
+# Output esempio:
+# 📱 AZIONI PRECEDENTI:
+# 1. CLICK:Aggiungi → Schermata di creazione contatto
+# 2. FILL:Nome:Mario Rossi → Schermata di creazione contatto
+# 3. CLICK:Salva → Lista contatti
+```
+
+### Debug Interfaccia
+```bash
+# Cattura interfaccia problematica
+python3 xml_to_json.py ui_captures/problem.xml debug.json
+python3 prompt_generator.py debug.json
+
+# Analizza elementi disponibili
+./adb_automator.sh debug.json list_elements
+```
+
+## � Documentazione Tecnica
+
+### Struttura JSON Elemento
+```json
+{
+  "type": "button|input",
+  "text": "Testo visibile",
+  "content_desc": "Descrizione accessibilità", 
+  "resource_id": "com.app.id:id/element",
+  "bounds": {"x": 0, "y": 0, "width": 100, "height": 50},
+  "clickable": true,
+  "editable": false,
+  "label": "Etichetta generata intelligentemente"
+}
+```
+
+### Sistema di Etichettatura
+- **Campi testo**: `Nome (VUOTO) [pos:159,491]` o `Nome (COMPILATO: 'Mario') [pos:159,491]`
+- **Bottoni**: Usa `text`, `content_desc`, o `resource_id` in ordine di preferenza
+- **Coordinate**: Sempre incluse per debugging
+
+## 🤝 Contribuire
+
+### Setup Sviluppo
+```bash
+git clone https://github.com/MisterCioffi/LogiDroid
+cd LogiDroid
+chmod +x *.sh
+```
+
+### Test Suite
+```bash
+# Test conversione XML
+python3 xml_to_json.py ui_captures/1.xml test.json
+
+# Test generazione prompt
+python3 prompt_generator.py test.json
+
+# Test automazione
+./adb_automator.sh test.json list_elements
+```
+
+## 📄 Licenza
+
+MIT License - Vedi file LICENSE per dettagli.
+
+## � Links Utili
+
+- [Android Debug Bridge](https://developer.android.com/studio/command-line/adb)
+- [Ollama](https://ollama.ai/)
+- [UIAutomator](https://developer.android.com/training/testing/ui-automator)
+
+---
+
+**LogiDroid v2.0** - Sistema di Automazione Android con Intelligenza Artificiale e Memoria 🤖📱
 # 2. Genera scenari test
 python3 prompt_generator.py test.json test
 # 3. Usa LLM per pianificare test completi

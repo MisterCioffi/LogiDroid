@@ -50,13 +50,17 @@ adb_type_text() {
     local description=${2:-""}
     
     print_info "Digitando testo: '$text' ${description}"
-    # Escape caratteri speciali
-    text=$(echo "$text" | sed 's/ /%s/g')
-    adb shell input text "$text"
+    
+    # Assicurati che ci sia focus
+    sleep 0.5
+    
+    # Escape caratteri speciali per ADB
+    local escaped_text=$(echo "$text" | sed 's/ /%s/g')
+    adb shell input text "$escaped_text"
     
     if [ $? -eq 0 ]; then
         print_success "Testo inserito"
-        sleep 0.5
+        sleep 1  # Pausa più lunga dopo inserimento
     else
         print_error "Errore durante inserimento testo"
         return 1
@@ -70,14 +74,22 @@ adb_clear_field() {
     
     print_info "Cancellando campo ($x, $y) ${description}"
     
-    # Click sul campo
+    # Click sul campo per assicurare focus
     adb shell input tap $x $y
-    sleep 0.5
+    sleep 0.8  # Pausa più lunga per focus
     
-    # Seleziona tutto e cancella
+    # Seleziona tutto e cancella (metodo 1)
     adb shell input keyevent KEYCODE_CTRL_A
     sleep 0.3
     adb shell input keyevent KEYCODE_DEL
+    sleep 0.3
+    
+    # Metodo alternativo: cancella carattere per carattere se necessario
+    adb shell input keyevent KEYCODE_MOVE_END
+    sleep 0.2
+    for i in {1..50}; do
+        adb shell input keyevent KEYCODE_DEL
+    done
     
     print_success "Campo cancellato"
 }
@@ -176,15 +188,19 @@ automate_from_json() {
     
     case $action in
         "click_button")
-            # Cerca pulsante per testo o resource_id
+            # Cerca pulsante per testo, content_desc o resource_id
             local coords=$(python3 -c "
 import json, sys
 with open('$json_file') as f:
     data = json.load(f)
 for elem in data['elements']:
-    if not elem['editable'] and ('$target' in elem.get('text', '') or '$target' in elem.get('resource_id', '')):
-        print(f\"{elem['bounds']['x']} {elem['bounds']['y']}\")
-        break
+    if not elem['editable']:
+        text = elem.get('text', '')
+        content_desc = elem.get('content_desc', '')
+        resource_id = elem.get('resource_id', '')
+        if ('$target' in text or '$target' in content_desc or '$target' in resource_id):
+            print(f\"{elem['bounds']['x']} {elem['bounds']['y']}\")
+            break
 ")
             if [ -n "$coords" ]; then
                 local x=$(echo $coords | cut -d' ' -f1)
@@ -197,19 +213,46 @@ for elem in data['elements']:
             ;;
             
         "fill_field")
-            # Cerca campo per label o resource_id
+            # Cerca campo per label, priorità ai campi vuoti
             local coords=$(python3 -c "
 import json, sys
 with open('$json_file') as f:
     data = json.load(f)
+
+# Prima cerca campi vuoti con il nome specificato E dimensioni ragionevoli
 for elem in data['elements']:
-    if elem['editable'] and ('$target' in elem.get('label', '') or '$target' in elem.get('resource_id', '')):
-        print(f\"{elem['bounds']['x']} {elem['bounds']['y']}\")
-        break
+    if elem['editable'] and '$target' in elem.get('label', ''):
+        current_text = elem.get('text', '').strip()
+        bounds = elem.get('bounds', {})
+        width = bounds.get('width', 0)
+        height = bounds.get('height', 0)
+        if width > 10 and height > 10:  # Campo vuoto e dimensioni ragionevoli
+            center_x = bounds['x'] + width // 2
+            center_y = bounds['y'] + height // 2
+            print(f\"{center_x} {center_y}\")
+            sys.exit(0)
+
+# Se non trova campi vuoti, cerca qualsiasi campo con quel nome E dimensioni ragionevoli
+for elem in data['elements']:
+    if elem['editable'] and '$target' in elem.get('label', ''):
+        bounds = elem.get('bounds', {})
+        width = bounds.get('width', 0)
+        height = bounds.get('height', 0)
+        if width > 10 and height > 10:  # Dimensioni ragionevoli
+            center_x = bounds['x'] + width // 2
+            center_y = bounds['y'] + height // 2
+            print(f\"{center_x} {center_y}\")
+            break
 ")
             if [ -n "$coords" ]; then
                 local x=$(echo $coords | cut -d' ' -f1)
                 local y=$(echo $coords | cut -d' ' -f2)
+                
+                print_info "Focusing campo ($x, $y) - campo '$target'"
+                # Click esplicito per dare focus
+                adb shell input tap $x $y
+                sleep 1  # Pausa per focus
+                
                 adb_clear_field $x $y "campo '$target'"
                 adb_type_text "$value" "nel campo '$target'"
             else

@@ -1,2 +1,8 @@
 screenshots/
 ui_captures/
+prompts/
+*.json
+*.xml
+*.png
+*.jpg
+*.jpeg
