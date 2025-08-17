@@ -35,6 +35,7 @@ def extract_elements(node, elements=[], text_nodes=[]):
     text = attrs.get('text', '').strip()
     resource_id = attrs.get('resource-id', '').strip()
     hint = attrs.get('hint', '').strip()
+    content_desc = attrs.get('content-desc', '').strip()
     clickable = attrs.get('clickable', 'false') == 'true'
     class_name = attrs.get('class', '').lower()
     
@@ -53,6 +54,7 @@ def extract_elements(node, elements=[], text_nodes=[]):
             'type': 'button' if is_button else 'edit_text',
             'text': text,
             'hint': hint,
+            'content_desc': content_desc,
             'resource_id': resource_id,
             'bounds': bounds,
             'clickable': clickable,

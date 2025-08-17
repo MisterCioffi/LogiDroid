@@ -24,14 +24,18 @@ def generate_simple_prompt(json_file: str) -> str:
             label = elem.get('label', elem.get('text', 'Campo senza nome'))
             text_fields.append(label)
         elif elem['clickable']:  # Tutti i bottoni clickable
-            # Usa il testo se presente, altrimenti usa l'ID della risorsa
+            # Usa il testo se presente, altrimenti usa la descrizione, altrimenti l'ID
             button_text = elem.get('text', '').strip()
             if not button_text:
-                resource_id = elem.get('resource_id', '')
-                if resource_id:
-                    button_text = f"[{resource_id.split(':')[-1]}]"
+                content_desc = elem.get('content_desc', '').strip()
+                if content_desc:
+                    button_text = f"{content_desc}"
                 else:
-                    button_text = "[bottone senza nome]"
+                    resource_id = elem.get('resource_id', '')
+                    if resource_id:
+                        button_text = f"[{resource_id.split(':')[-1]}]"
+                    else:
+                        button_text = "[bottone senza nome]"
             buttons.append(button_text)
     
     # Genera prompt semplice
