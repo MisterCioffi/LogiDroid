@@ -6,3 +6,6 @@ prompts/
 *.png
 *.jpg
 *.jpeg
+
+# Eccezioni per file necessari
+!icona.png

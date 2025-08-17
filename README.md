@@ -1,5 +1,17 @@
 # 🧠 LogiDroid - Sistema Avanzato di Automazione Android con LLM
 
+<div align="center">
+  <img src="imm/Icona.png" alt="LogiDroid Logo" width="128" height="128">
+  <br><br>
+  
+  ![Version](https://img.shields.io/badge/version-2.0-blue.svg)
+  ![Python](https://img.shields.io/badge/python-3.9+-brightgreen.svg)
+  ![License](https://img.shields.io/badge/license-MIT-orange.svg)
+  ![Android](https://img.shields.io/badge/platform-Android-green.svg)
+  ![AI](https://img.shields.io/badge/AI-Ollama%20LLM-purple.svg)
+  
+</div>
+
 LogiDroid è un sistema all'avanguardia che combina cattura UI, analisi intelligente e automazione Android tramite ADB, con integrazione LLM locale per esplorazione autonoma e automazione guidata da intelligenza artificiale.
 
 ## 🌟 Caratteristiche Principali
