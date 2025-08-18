@@ -1,7 +1,7 @@
 # 🧠 LogiDroid - Sistema Avanzato di Automazione Android con LLM
 
 <div align="center">
-  <img src="imm/Icona.png" alt="LogiDroid Logo" width="128" height="128">
+  <img src="imm/Icona.png" alt="LogiDroid Logo" width="300" height="300">
   <br><br>
   
   ![Version](https://img.shields.io/badge/version-2.0-blue.svg)
@@ -44,26 +44,25 @@ LogiDroid è un sistema all'avanguardia che combina cattura UI, analisi intellig
 
 ```
 LogiDroid/
-├── 🚀 Core System
-│   ├── logidroid_complete.sh     # 🎯 Script principale completo
+├── 🚀 Core System (6 file essenziali)
+│   ├── logidroid_complete.sh     # ⭐ Script principale unificato
 │   ├── llm_local.py              # 🧠 LLM con sistema memoria avanzato  
 │   ├── prompt_generator.py       # 📝 Generatore prompt con cronologia
 │   ├── adb_automator.sh          # ⚡ Automazione ADB precisa
-│   └── xml_to_json.py            # 🔄 Convertitore interfacce
-├── 📁 Working Directories
-│   ├── test/                     # 🧪 Cartella test centralizzata
-│   │   ├── json/                 # 📋 File JSON generati
-│   │   ├── xml/                  # 📱 File XML interfacce
-│   │   ├── screenshots/          # 📸 Screenshot PNG
-│   │   └── prompts/              # 🧠 Sistema memoria LLM
-│   ├── prompts/                  # 🧠 Sistema memoria LLM (legacy)
-│   ├── ui_captures/              # 📱 Catture interfacce XML (legacy)
-│   └── screenshots/              # 📸 Screenshot PNG (legacy)
-├── ⚙️ Configuration
-│   ├── config.sh                 # ⚙️ Configurazioni sistema
-│   ├── extraction.sh             # 🔧 Script estrazione legacy
-│   └── llm_integration.sh        # 🔗 Integrazione LLM legacy
+│   ├── xml_to_json.py            # 🔄 Convertitore interfacce
+│   └── cleanup_test.sh           # 🧹 Utility pulizia test
+├── 📁 Test Directory
+│   └── test/                     # 🧪 Cartella test centralizzata
+│       ├── json/                 # 📋 File JSON generati
+│       ├── xml/                  # 📱 File XML interfacce
+│       ├── screenshots/          # 📸 Screenshot PNG
+│       └── prompts/              # 🧠 Sistema memoria LLM
+├── 📁 Legacy (mantenute per compatibilità)
+│   ├── prompts/                  # 🧠 Sistema memoria LLM legacy
+│   ├── ui_captures/              # 📱 Catture interfacce XML legacy
+│   └── screenshots/              # 📸 Screenshot PNG legacy
 └── 📖 Documentation
+    ├── icona.png                 # 🎨 Logo del progetto
     ├── README.md                 # 📚 Questa documentazione
     └── .gitignore               # 🚫 File ignorati da Git
 ```
@@ -98,29 +97,36 @@ adb devices  # Verifica connessione
 
 #### 🎯 Esplorazione Autonoma (Consigliato)
 ```bash
+### 2. Utilizzo Immediato
+
+#### 🎯 Esplorazione Autonoma (Un Solo Comando!)
+```bash
 # Naviga all'app che vuoi esplorare sul dispositivo
 # Avvia l'esplorazione autonoma
 ./logidroid_complete.sh
 
-# L'LLM inizierà ad esplorare l'app automaticamente
-# Ogni azione viene memorizzata per mantenere il filo conduttore
+# ✨ Il sistema fa tutto automaticamente:
+# 📸 Cattura screenshot + interfaccia XML
+# 🔄 Converte in JSON strutturato  
+# 🧠 L'LLM analizza e decide l'azione
+# ⚡ Esegue l'azione via ADB
+# 💾 Memorizza per mantenere il filo conduttore
 ```
 
-#### 📱 Workflow Completo Manual
+#### � Componenti Individuali (Uso Avanzato)
 ```bash
-# 1. Cattura interfaccia corrente
-adb shell uiautomator dump /sdcard/ui_dump.xml
-adb pull /sdcard/ui_dump.xml ui_captures/current.xml
+# Cattura e conversione
+python3 xml_to_json.py test/xml/input.xml test/json/output.json
 
-# 2. Converti in JSON
-python3 xml_to_json.py ui_captures/current.xml result.json
+# Generazione prompt con memoria
+python3 prompt_generator.py test/json/result.json
 
-# 3. Genera prompt con memoria
-python3 prompt_generator.py result.json
+# LLM locale con Ollama
+python3 llm_local.py test/json/result.json
 
-# 4. Esegui azione specifica
-./adb_automator.sh result.json click_button "Nome Bottone"
-./adb_automator.sh result.json fill_field "Nome Campo" "Valore"
+# Automazione ADB diretta
+./adb_automator.sh test/json/result.json click_button "Nome Bottone"
+./adb_automator.sh test/json/result.json fill_field "Nome Campo" "Valore"
 ```
 
 ## 📊 Output del Sistema
@@ -216,26 +222,38 @@ rm -rf test/prompts/*       # Solo cronologia azioni
 
 ## 🔧 API e Comandi
 
-### Script Principale
+### 🎯 Sistema Semplificato (v2.0)
 ```bash
-./logidroid_complete.sh              # Esplorazione autonoma completa
+# Setup una volta sola
+brew install ollama android-platform-tools
+ollama pull llama3.2:3b
+
+# Uso quotidiano - UN SOLO COMANDO!
+./logidroid_complete.sh     # ⭐ Fa tutto automaticamente
 ```
 
-### Componenti Individuali
+### 🧹 Gestione File Test
 ```bash
-# Cattura e conversione
-python3 xml_to_json.py input.xml output.json
+./cleanup_test.sh all      # Rimuove tutti i file test
+./cleanup_test.sh json     # Solo file JSON
+./cleanup_test.sh xml      # Solo file XML
+./cleanup_test.sh screenshots # Solo screenshot
+```
 
-# Generazione prompt con memoria
-python3 prompt_generator.py result.json [azione_precedente]
+### 🔧 Componenti Individuali (Opzionale)
+```bash
+# Conversione manuale
+python3 xml_to_json.py test/xml/input.xml test/json/output.json
 
-# LLM locale con Ollama
-python3 llm_local.py result.json
+# Generazione prompt
+python3 prompt_generator.py test/json/result.json
+
+# LLM locale
+python3 llm_local.py test/json/result.json
 
 # Automazione ADB
-./adb_automator.sh result.json click_button "Nome Bottone"
-./adb_automator.sh result.json fill_field "Nome Campo" "Valore"
-./adb_automator.sh result.json list_elements
+./adb_automator.sh test/json/result.json click_button "Nome"
+./adb_automator.sh test/json/result.json fill_field "Campo" "Valore"
 ```
 
 ## ⚙️ Configurazione LLM
