@@ -10,7 +10,7 @@ import sys
 import os
 from datetime import datetime
 
-def load_action_history(history_file: str = "prompts/action_history.json") -> list:
+def load_action_history(history_file: str = "test/prompts/action_history.json") -> list:
     """Carica la cronologia delle azioni precedenti"""
     try:
         if os.path.exists(history_file):
@@ -20,7 +20,7 @@ def load_action_history(history_file: str = "prompts/action_history.json") -> li
         pass
     return []
 
-def save_action_to_history(action: str, screen_info: str, history_file: str = "prompts/action_history.json"):
+def save_action_to_history(action: str, screen_info: str, history_file: str = "test/prompts/action_history.json"):
     """Salva un'azione nella cronologia"""
     try:
         # Crea la directory se non esiste
@@ -156,7 +156,7 @@ def generate_simple_prompt(json_file: str) -> str:
     prompt += "Specifica l'azione da eseguire:\n"
     prompt += "- CLICK:nome_bottone (per premere un bottone)\n"
     prompt += "- FILL:nome_campo:valore (per compilare un campo)\n"
-    
+     
     return prompt
 
 def main():

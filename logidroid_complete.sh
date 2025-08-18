@@ -56,13 +56,15 @@ print_success "Dispositivo Android connesso"
 # 1. Cattura schermata corrente
 print_step "📱 Catturando interfaccia corrente..."
 TIMESTAMP=$(date +%s)
-XML_FILE="ui_captures/current_${TIMESTAMP}.xml"
-JSON_FILE="result_current_${TIMESTAMP}.json"
-SCREENSHOT_FILE="screenshots/screen_${TIMESTAMP}.png"
+XML_FILE="test/xml/current_${TIMESTAMP}.xml"
+JSON_FILE="test/json/result_current_${TIMESTAMP}.json"
+SCREENSHOT_FILE="test/screenshots/screen_${TIMESTAMP}.png"
 
 # Crea cartelle se non esistono
-mkdir -p ui_captures
-mkdir -p screenshots
+mkdir -p test/xml
+mkdir -p test/json
+mkdir -p test/screenshots
+mkdir -p test/prompts
 
 # Cattura screenshot
 print_step "📸 Catturando screenshot..."

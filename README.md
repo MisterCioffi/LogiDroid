@@ -51,9 +51,14 @@ LogiDroid/
 │   ├── adb_automator.sh          # ⚡ Automazione ADB precisa
 │   └── xml_to_json.py            # 🔄 Convertitore interfacce
 ├── 📁 Working Directories
-│   ├── prompts/                  # 🧠 Sistema memoria LLM
-│   ├── ui_captures/              # 📱 Catture interfacce XML
-│   └── screenshots/              # 📸 Screenshot PNG
+│   ├── test/                     # 🧪 Cartella test centralizzata
+│   │   ├── json/                 # 📋 File JSON generati
+│   │   ├── xml/                  # 📱 File XML interfacce
+│   │   ├── screenshots/          # 📸 Screenshot PNG
+│   │   └── prompts/              # 🧠 Sistema memoria LLM
+│   ├── prompts/                  # 🧠 Sistema memoria LLM (legacy)
+│   ├── ui_captures/              # 📱 Catture interfacce XML (legacy)
+│   └── screenshots/              # 📸 Screenshot PNG (legacy)
 ├── ⚙️ Configuration
 │   ├── config.sh                 # ⚙️ Configurazioni sistema
 │   ├── extraction.sh             # 🔧 Script estrazione legacy
@@ -120,13 +125,25 @@ python3 prompt_generator.py result.json
 
 ## 📊 Output del Sistema
 
-### File Generati
+### File Generati (Cartella test/)
 ```
-📸 screenshots/screen_TIMESTAMP.png    # Screenshot PNG dell'interfaccia
-📱 ui_captures/current_TIMESTAMP.xml   # Struttura UI in formato XML
-📋 result_current_TIMESTAMP.json       # Dati strutturati per l'LLM
-🧠 prompts/action_history.json         # Cronologia azioni (max 10)
-📝 prompts/last_action.txt             # Ultima azione eseguita
+📸 test/screenshots/screen_TIMESTAMP.png    # Screenshot PNG dell'interfaccia
+📱 test/xml/current_TIMESTAMP.xml           # Struttura UI in formato XML
+📋 test/json/result_current_TIMESTAMP.json  # Dati strutturati per l'LLM
+🧠 test/prompts/action_history.json         # Cronologia azioni (max 10)
+📝 test/prompts/last_action.txt             # Ultima azione eseguita
+```
+
+### Gestione File di Test
+```bash
+# Pulizia rapida di tutti i file di test
+rm -rf test/
+
+# Pulizia selettiva
+rm -rf test/json/*          # Solo file JSON
+rm -rf test/xml/*           # Solo file XML  
+rm -rf test/screenshots/*   # Solo screenshot
+rm -rf test/prompts/*       # Solo cronologia azioni
 ```
 
 ### Esempio JSON Generato
@@ -286,11 +303,27 @@ ls -la prompts/
 ### Debug Interfaccia
 ```bash
 # Cattura interfaccia problematica
-python3 xml_to_json.py ui_captures/problem.xml debug.json
-python3 prompt_generator.py debug.json
+python3 xml_to_json.py test/xml/problem.xml test/json/debug.json
+python3 prompt_generator.py test/json/debug.json
 
 # Analizza elementi disponibili
-./adb_automator.sh debug.json list_elements
+./adb_automator.sh test/json/debug.json list_elements
+```
+
+### Gestione File di Test
+```bash
+# Pulizia completa
+./cleanup_test.sh all
+
+# Pulizia selettiva
+./cleanup_test.sh json        # Solo file JSON
+./cleanup_test.sh xml         # Solo file XML
+./cleanup_test.sh screenshots # Solo screenshot
+./cleanup_test.sh prompts     # Solo cronologia
+./cleanup_test.sh legacy      # File cartelle vecchie
+
+# Ricreare struttura dopo pulizia completa
+mkdir -p test/{json,xml,screenshots,prompts}
 ```
 
 ## � Documentazione Tecnica

@@ -7,7 +7,7 @@ import subprocess
 import os
 
 # Variabile globale per memorizzare l'azione precedente
-PREVIOUS_ACTION_FILE = "prompts/last_action.txt"
+PREVIOUS_ACTION_FILE = "test/prompts/last_action.txt"
 
 def save_last_action(action):
     """Salva l'ultima azione eseguita"""

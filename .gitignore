@@ -1,6 +1,7 @@
-screenshots/
-ui_captures/
-prompts/
+# Cartelle di test e dati temporanei
+test/
+
+# File temporanei
 *.json
 *.xml
 *.png
@@ -8,4 +9,4 @@ prompts/
 *.jpeg
 
 # Eccezioni per file necessari
-!icona.png
+!Icona.png
