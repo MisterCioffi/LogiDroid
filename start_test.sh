@@ -99,7 +99,7 @@ print_success "JSON generato: $JSON_FILE"
 # 3. Analisi tramite LLM
 print_step "🤖 Analizzando interfaccia con LLM locale..."
 
-python3 llm_local.py "$JSON_FILE"
+python3 llm_api.py "$JSON_FILE"
 
 # 4. Cleanup opzionale
 echo ""

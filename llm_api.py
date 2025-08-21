@@ -12,9 +12,35 @@ import os
 import re
 from datetime import datetime
 
-# Configurazione Gemini 2.0 Flash (API KEY gratuita)
-GEMINI_API_KEY = "AIzaSyA6xXL-FUnCg4KdvaiiHCRs91czYZdsRwE"
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+def load_config():
+    """Carica configurazione da config.json"""
+    config_file = "config.json"
+    
+    if not os.path.exists(config_file):
+        print(f"❌ File {config_file} non trovato!")
+        print("📝 Crea il file config.json copiando da config_example.json")
+        print("🔑 Inserisci la tua API key Gemini nel file config.json")
+        sys.exit(1)
+    
+    try:
+        with open(config_file, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        return config
+    except Exception as e:
+        print(f"❌ Errore nel caricare config.json: {e}")
+        sys.exit(1)
+
+# Carica configurazione
+CONFIG = load_config()
+GEMINI_API_KEY = CONFIG.get("gemini_api_key")
+GEMINI_URL = CONFIG.get("api_url")
+
+# Verifica API key
+if not GEMINI_API_KEY or GEMINI_API_KEY == "your-google-gemini-api-key-here":
+    print("❌ API Key Gemini non configurata!")
+    print("🔑 Modifica config.json e inserisci la tua API key")
+    print("📖 Ottieni la chiave da: https://makersuite.google.com/app/apikey")
+    sys.exit(1)
 
 # File per memorizzare l'azione precedente (fallback di sicurezza)
 PREVIOUS_ACTION_FILE = "test/prompts/last_action.txt"
@@ -37,9 +63,9 @@ def call_gemini_api(prompt):
             }
         ],
         "generationConfig": {
-            "maxOutputTokens": 50,
-            "temperature": 0.1,
-            "topP": 0.8
+            "maxOutputTokens": CONFIG.get("max_output_tokens", 50),
+            "temperature": CONFIG.get("temperature", 0.7),
+            "topP": CONFIG.get("top_p", 0.9)
         }
     }
     
@@ -139,7 +165,7 @@ def save_last_action(action):
 
 def main():
     if len(sys.argv) < 2:
-        print("Utilizza: python3 llm_local.py <json_file>")
+        print("Utilizza: python3 llm_api.py <json_file>")
         return
     
     json_file = sys.argv[1]

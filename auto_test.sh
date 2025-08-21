@@ -79,7 +79,7 @@ run_test_iteration() {
     fi
     
     # 3. Esegui azione tramite LLM
-    python3 llm_local.py "$json_file"
+    python3 llm_api.py "$json_file"
     local llm_result=$?
     
     if [ $llm_result -ne 0 ]; then

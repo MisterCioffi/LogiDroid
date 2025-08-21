@@ -1,6 +1,9 @@
 # Cartelle di test e dati temporanei
 test/
 
+# File di configurazione con API keys
+config.json
+
 # File temporanei
 *.json
 *.xml
@@ -11,3 +14,4 @@ test/
 # Eccezioni per file necessari
 !IconaLogiDroid.png
 !imm/
+!config_example.json

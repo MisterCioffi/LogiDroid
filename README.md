@@ -1,102 +1,123 @@
 # 🧠 LogiDroid - Sistema Avanzato di Automazione Android con LLM
 
+
 <div align="center">
-  <img src="imm/IconaLogiDroid.png" alt="LogiDroid Logo" width="300" height="300">
+  <img src="imm/IconaLogiDroid.png" alt="LogiDroid Logo" width="600" height="600">
+  <br><br>
+
+
+
+<div align="center">
+  <img sr├── 📚 Documentation
+│   ├── complete_instructions.txt # 🤖 Istruzioni menu-based per Gemini
+│   ├── docs/                     # 📖 Documentazione dettagliata
+│   ├── README.md                 # 📚 Questa documentazione
+│   └── .gitignore               # 🚫 File ignorati da Git
+├── ⚙️ Configuration
+│   ├── config.json              # 🔑 API Key Gemini (NON condividere!)
+│   └── config_example.json      # 📋 Template configurazione
+└── 🎨 Assets
+    └── imm/Icona.png            # 🎨 Logo del progettoIconaLogiDroid.png" alt="LogiDroid Logo" width="500" height="500">
   <br><br>
   
-  ![Version](https://img.shields.io/badge/version-2.0-blue.svg)
+  ![Version](https://img.shields.io/badge/version-3.0-blue.svg)
   ![Python](https://img.shields.io/badge/python-3.9+-brightgreen.svg)
   ![License](https://img.shields.io/badge/license-MIT-orange.svg)
   ![Android](https://img.shields.io/badge/platform-Android-green.svg)
-  ![AI](https://img.shields.io/badge/AI-Ollama%20LLM-purple.svg)
+  ![AI](https://img.shields.io/badge/AI-Gemini%202.0%20Flash-purple.svg)
   
 </div>
 
-LogiDroid è un sistema all'avanguardia che combina cattura UI, analisi intelligente e automazione Android tramite ADB, con integrazione LLM locale per esplorazione autonoma e automazione guidata da intelligenza artificiale.
+LogiDroid è un sistema all'avanguardia che combina cattura UI, analisi intelligente e automazione Android tramite ADB, con integrazione **Gemini 2.0 Flash** per esplorazione autonoma e automazione guidata da intelligenza artificiale di nuova generazione.
 
 ## 🌟 Caratteristiche Principali
 
 - **🔍 Cattura Completa**: Screenshot PNG + struttura UI XML in formato JSON
-- **🧠 Memoria Intelligente**: Sistema di cronologia azioni per mantenere il filo conduttore
-- **🤖 LLM Locale**: Integrazione con Ollama per decisioni autonome
+- **🧠 Memoria Intelligente**: Sistema di cronologia azioni con 20 azioni di contesto
+- **🤖 Gemini 2.0 Flash**: Integrazione con l'AI più avanzata di Google, completamente gratuita
+- **💡 Menu-Based Commands**: Sistema rivoluzionario di comandi a lettera (A, B, C) per eliminare errori di parsing
 - **⚡ Automazione Precisa**: Click centrati e gestione dinamica delle interfacce
-- **🎯 Esplorazione Autonoma**: L'LLM esplora le app mantenendo la logica delle azioni
+- **🎯 Esplorazione Autonoma**: Gemini esplora le app con logica superiore e strategia intelligente
 - **🔧 Targeting Avanzato**: Riconoscimento intelligente dei controlli Android
+- **🆓 Completamente Gratuito**: 15 richieste/minuto, 1500/giorno, 1M token/mese
 
-## 🔒 Architettura Privacy-First
+## 🌐 Architettura Cloud-First con Privacy
 
-### 🏠 **Sistema Completamente Locale**
+### 🧠 **Sistema Gemini 2.0 Flash Gratuito**
 ```
-🚫 NESSUNA CONNESSIONE INTERNET NECESSARIA 🚫
+🌐 CONNESSIONE SICURA A GOOGLE AI 🌐
 
-┌─────────────────┐    HTTP localhost   ┌─────────────────┐
-│   LogiDroid     │◄──────────────────►│   Ollama Server │
-│                 │   127.0.0.1:11434   │   (tuo Mac)     │
-└─────────────────┘                     └─────────────────┘
+┌─────────────────┐    HTTPS Sicure     ┌─────────────────┐
+│   LogiDroid     │◄──────────────────►│  Gemini 2.0 API │
+│                 │ generativelanguage  │   (Google AI)   │
+└─────────────────┘    .googleapis.com  └─────────────────┘
                                                  │
                                                  ▼
                                         ┌─────────────────┐
-                                        │  llama3.1:8b    │
-                                        │   4GB LOCALI    │
-                                        │   💾 TUO DISCO  │
+                                        │ Gemini 2.0 Flash│
+                                        │   VELOCISSIMO   │
+                                        │  🆓 GRATUITO    │
                                         └─────────────────┘
 ```
 
-### 🛡️ **Privacy Totale Garantita**
-- ✅ **Zero Dati Esterni**: Tutto rimane sul tuo computer
-- ✅ **Funziona Offline**: Nessuna connessione internet richiesta
-- ✅ **Controllo Totale**: Il modello AI è completamente tuo
-- ✅ **Nessun Tracking**: Zero telemetria o log remoti
-- ✅ **Dati Sensibili Sicuri**: Screenshot e azioni mai inviate online
+### 🛡️ **Privacy e Sicurezza**
+- ✅ **API Sicure**: Connessioni HTTPS crittografate
+- ✅ **Zero Costi**: 15 richieste/minuto, 1500/giorno completamente gratis
+- ✅ **Intelligenza Superiore**: Gemini 2.0 Flash > modelli locali
+- ✅ **Velocità**: Risposta istantanea vs lag modelli locali
+- ✅ **Context Window**: 1M+ token vs 4K dei modelli locali
+- 🔒 **API Key Sicura**: File `config.json` escluso dal git per proteggere le credenziali
 
-### ⚡ **Perché HTTP per un Modello Locale?**
-- **Ollama Server**: Gestisce ottimizzazioni GPU/RAM automaticamente
-- **API Standard**: Interfaccia pulita e separazione responsabilità
-- **Caching Intelligente**: Mantiene il modello in memoria tra le chiamate
-- **Modelli Multipli**: Può servire diversi LLM contemporaneamente
+### ⚡ **Perché Gemini invece di Ollama Locale?**
+- **Intelligenza**: Gemini 2.0 Flash è drasticamente più intelligente per UI testing
+- **Velocità**: Istantaneo vs 5-10 secondi con 8GB RAM
+- **Affidabilità**: Zero crash, sempre disponibile
+- **Gratuito**: Nessun costo hardware aggiuntivo
+- **Aggiornamenti**: Sempre l'ultima versione senza installazioni
 
-## 🆕 Novità v2.0
+## 🆕 Novità v3.0
 
-### ✨ Sistema di Memoria Avanzato
-- **Cronologia Persistente**: Mantiene le ultime 10 azioni in `prompts/action_history.json`
-- **Filo Conduttore**: L'LLM ricorda cosa ha fatto e continua logicamente
-- **Contesto Dinamico**: Riconoscimento automatico del tipo di schermata
+### 🚀 Gemini 2.0 Flash Integration
+- **AI di Nuova Generazione**: Sostituito Ollama con Gemini 2.0 Flash
+- **Completamente Gratuito**: 15 richieste/minuto, 1500/giorno, 1M token/mese
+- **Intelligenza Superiore**: Scelte molto più logiche e strategiche
+- **Velocità Istantanea**: Risposta immediata vs lag modelli locali
 
-### 🎯 Targeting Migliorato
-- **Click Centrati**: Calcolo automatico del centro degli elementi
-- **Filtri Dimensionali**: Esclude elementi troppo piccoli (< 10px)
-- **Coordinate Precise**: Sistema di bounds ottimizzato
+### 💡 Sistema Menu-Based Rivoluzionario
+- **Comandi a Lettera**: L'AI sceglie A, B, C invece di costruire risposte
+- **Zero Errori di Parsing**: Elimina errori di formato e interpretazione
+- **Testo Personalizzato**: Supporto F:MarioRossi per input custom
+- **Esempi Dinamici**: Generati specificamente per ogni schermata
 
-### 🤖 LLM Ottimizzato
-- **Ollama Integration**: LLM locale llama3.2:3b con parametri ottimizzati
-- **Parsing Robusto**: Gestione intelligente delle risposte dell'LLM
-- **Variabilità Controllata**: Temperature 0.7, repeat_penalty 1.2 per evitare loop
+### � Memoria Estesa
+- **20 Azioni di Contesto**: Cronologia molto ampia per decisioni strategiche
+- **Rilevamento Vicoli Ciechi**: Gemini riconosce quando tornare indietro
+- **Pattern Recognition**: Identifica loop e comportamenti ripetitivi
 
 ## 📁 Struttura del Progetto
 
 ```
 LogiDroid/
 ├── 🚀 Core System (6 file essenziali)
-│   ├── logidroid_complete.sh     # ⭐ Script principale unificato
-│   ├── llm_local.py              # 🧠 LLM con sistema memoria avanzato  
-│   ├── prompt_generator.py       # 📝 Generatore prompt con cronologia
+│   ├── start_test.sh             # ⭐ Script principale cattura + test
+│   ├── llm_api.py                # 🧠 Gemini 2.0 Flash integration
+│   ├── prompt_generator.py       # 📝 Menu-based commands + memoria 20 azioni
 │   ├── adb_automator.sh          # ⚡ Automazione ADB precisa
 │   ├── xml_to_json.py            # 🔄 Convertitore interfacce
 │   └── cleanup_test.sh           # 🧹 Utility pulizia test
-├── 📁 Test Directory
+├── 📁 Generated at Runtime
 │   └── test/                     # 🧪 Cartella test centralizzata
 │       ├── json/                 # 📋 File JSON generati
 │       ├── xml/                  # 📱 File XML interfacce
 │       ├── screenshots/          # 📸 Screenshot PNG
-│       └── prompts/              # 🧠 Sistema memoria LLM
-├── 📁 Legacy (mantenute per compatibilità)
-│   ├── prompts/                  # 🧠 Sistema memoria LLM legacy
-│   ├── ui_captures/              # 📱 Catture interfacce XML legacy
-│   └── screenshots/              # 📸 Screenshot PNG legacy
-└── 📖 Documentation
-    ├── icona.png                 # 🎨 Logo del progetto
-    ├── README.md                 # 📚 Questa documentazione
-    └── .gitignore               # 🚫 File ignorati da Git
+│       └── prompts/              # 🧠 Sistema memoria 20 azioni
+├── � Documentation
+│   ├── complete_instructions.txt # 🤖 Istruzioni menu-based per Gemini
+│   ├── docs/                     # 📖 Documentazione dettagliata
+│   ├── README.md                 # 📚 Questa documentazione
+│   └── .gitignore               # 🚫 File ignorati da Git
+└── 🎨 Assets
+    └── imm/Icona.png            # 🎨 Logo del progetto
 ```
 
 ## 🚀 Quick Start
@@ -109,12 +130,11 @@ LogiDroid/
 brew install android-platform-tools  # macOS
 # oppure installa Android SDK
 
-# Python 3.9+
+# Python 3.7+
 python3 --version
 
-# Ollama per LLM locale
-brew install ollama
-ollama pull llama3.2:3b
+# Google Gemini API Key (gratuita)
+# Ottieni da: https://makersuite.google.com/app/apikey
 ```
 
 #### Setup Dispositivo Android
@@ -125,36 +145,60 @@ adb devices  # Verifica connessione
 # Autorizza il computer quando richiesto dal dispositivo
 ```
 
-### 2. Utilizzo Immediato
+### 2. Configurazione API
 
-#### 🎯 Esplorazione Autonoma (Consigliato)
+#### 🔑 Setup Gemini API Key
 ```bash
-### 2. Utilizzo Immediato
+# 1. Copia il file di esempio
+cp config_example.json config.json
 
-#### 🎯 Esplorazione Autonoma (Un Solo Comando!)
+# 2. Modifica config.json e inserisci la tua API key
+# Cambia "your-google-gemini-api-key-here" con la tua chiave
+# Ottieni la chiave gratis da: https://makersuite.google.com/app/apikey
+
+# 3. Test connessione
+python3 llm_api.py  # Dovrebbe connettersi a Gemini
+```
+
+### 3. Utilizzo Immediato
+
+#### 🎯 Test Automatico con Menu
 ```bash
-# Naviga all'app che vuoi esplorare sul dispositivo
-# Avvia l'esplorazione autonoma
-./logidroid_complete.sh
+# Naviga all'app che vuoi testare sul dispositivo
+# Avvia il test automatico
+./start_test.sh
 
 # ✨ Il sistema fa tutto automaticamente:
 # 📸 Cattura screenshot + interfaccia XML
 # 🔄 Converte in JSON strutturato  
-# 🧠 L'LLM analizza e decide l'azione
-# ⚡ Esegue l'azione via ADB
-# 💾 Memorizza per mantenere il filo conduttore
+# 🧠 Gemini 2.0 Flash analizza e presenta menu
+# ⚡ Esegue l'azione scelta via ADB
+# 💾 Memorizza azione (memoria fino a 20 azioni)
 ```
 
-#### � Componenti Individuali (Uso Avanzato)
+#### 📋 Sistema Menu-Based
+Il sistema ora presenta opzioni a menu:
+```
+Gemini analizza la schermata e presenta:
+A. Clicca su "Login"
+B. Digita nel campo username  
+C. Scorri verso il basso
+```
+
+Gemini risponde con una lettera (es: "A") per eliminare errori di parsing.
+Per testo personalizzato: `F:Testo da scrivere`
+
+#### 🔧 Componenti Individuali (Uso Avanzato)
 ```bash
 # Cattura e conversione
 python3 xml_to_json.py test/xml/input.xml test/json/output.json
 
-# Generazione prompt con memoria
+# Generazione prompt con memoria (20 azioni)
 python3 prompt_generator.py test/json/result.json
 
-# LLM locale con Ollama
-python3 llm_local.py test/json/result.json
+# Gemini 2.0 Flash API call
+# Gemini API call
+python3 llm_api.py test/json/result.json
 
 # Automazione ADB diretta
 ./adb_automator.sh test/json/result.json click_button "Nome Bottone"
@@ -167,8 +211,8 @@ python3 llm_local.py test/json/result.json
 ```
 📸 test/screenshots/screen_TIMESTAMP.png    # Screenshot PNG dell'interfaccia
 📱 test/xml/current_TIMESTAMP.xml           # Struttura UI in formato XML
-📋 test/json/result_current_TIMESTAMP.json  # Dati strutturati per l'LLM
-🧠 test/prompts/action_history.json         # Cronologia azioni (max 10)
+📋 test/json/result_current_TIMESTAMP.json  # Dati strutturati per Gemini
+🧠 test/prompts/action_history.json         # Cronologia azioni (max 20)
 📝 test/prompts/last_action.txt             # Ultima azione eseguita
 ```
 
@@ -214,7 +258,7 @@ rm -rf test/prompts/*       # Solo cronologia azioni
 
 ## 🧠 Sistema di Memoria Avanzato
 
-### Cronologia delle Azioni
+### Cronologia delle Azioni (20 Azioni Max)
 ```json
 [
   {
@@ -235,9 +279,9 @@ rm -rf test/prompts/*       # Solo cronologia azioni
 ]
 ```
 
-### Prompt Generato con Memoria
+### Prompt Generato con Memoria per Gemini
 ```
-🤖 ESPLORAZIONE AUTONOMA ANDROID - MANTIENI IL FILO CONDUTTORE
+🤖 ESPLORAZIONE AUTONOMA ANDROID - MENU COMMANDS
 
 📱 AZIONI PRECEDENTI (mantieni la logica!):
 1. CLICK:Aggiungi → Schermata di creazione contatto
@@ -245,23 +289,25 @@ rm -rf test/prompts/*       # Solo cronologia azioni
 
 📍 SCHERMATA ATTUALE: Schermata di creazione contatto
 
-🎯 OBIETTIVO: Esplora l'app in modo logico e coerente
-• Ricorda le azioni precedenti e continua il percorso
-• Se hai appena compilato campi, considera di salvare
-• Se sei in una lista, prova a aprire elementi
-• Evita di ripetere sempre le stesse azioni
+🎯 COMANDI DISPONIBILI:
+A. Clicca su "Salva"
+B. Compila campo "Email"  
+C. Torna indietro
+
+🤖 RISPONDI CON UNA SOLA LETTERA (A, B, C)
+Per testo personalizzato: F:Testo da digitare
 ```
 
 ## 🔧 API e Comandi
 
-### 🎯 Sistema Semplificato (v2.0)
+### 🎯 Sistema Semplificato (v3.0)
 ```bash
-# Setup una volta sola
-brew install ollama android-platform-tools
-ollama pull llama3.2:3b
+# Setup una volta sola  
+brew install android-platform-tools
+# Configura API Key Gemini in config.json
 
 # Uso quotidiano - UN SOLO COMANDO!
-./logidroid_complete.sh     # ⭐ Fa tutto automaticamente
+./start_test.sh     # ⭐ Fa tutto automaticamente con Gemini
 ```
 
 ### 🧹 Gestione File Test
@@ -277,43 +323,59 @@ ollama pull llama3.2:3b
 # Conversione manuale
 python3 xml_to_json.py test/xml/input.xml test/json/output.json
 
-# Generazione prompt
+# Generazione prompt con menu
 python3 prompt_generator.py test/json/result.json
 
-# LLM locale
-python3 llm_local.py test/json/result.json
+# Gemini API call
+python3 llm_api.py test/json/result.json
 
 # Automazione ADB
 ./adb_automator.sh test/json/result.json click_button "Nome"
 ./adb_automator.sh test/json/result.json fill_field "Campo" "Valore"
 ```
 
-## ⚙️ Configurazione LLM
+## ⚙️ Configurazione Gemini API
 
-### Parametri Ollama Ottimizzati
+### Setup API Key
 ```json
+// In config.json
 {
-  "model": "llama3.2:3b",
-  "temperature": 0.7,        // Variabilità per evitare loop
-  "repeat_penalty": 1.2,     // Penalità ripetizioni
-  "top_p": 0.9,             // Diversità token
-  "num_predict": 50         // Lunghezza risposta
+  "gemini_api_key": "your-google-gemini-api-key-here",
+  "model": "gemini-2.0-flash-exp", 
+  "api_url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent",
+  "max_output_tokens": 50,
+  "temperature": 0.7,
+  "top_p": 0.9
 }
 ```
 
-### Formato Risposte LLM
+### Parametri Gemini Ottimizzati
+```json
+{
+  "model": "gemini-2.0-flash-exp",
+  "temperature": 0.7,        // Bilanciamento decisioni
+  "max_output_tokens": 50,   // Risposte brevi (solo lettere)
+  "top_p": 0.9              // Diversità nelle scelte
+}
 ```
-CLICK:Nome_Bottone          # Clicca un bottone
-FILL:Nome_Campo:Valore      # Compila un campo
+
+### Formato Risposte Menu-Based
+```
+A                           # Scelta menu semplice
+F:Testo da digitare         # Testo personalizzato
 ```
 
 ## 🔍 Risoluzione Problemi
 
-### LLM Non Risponde
+### Gemini API Non Risponde
 ```bash
-# Verifica Ollama
-curl http://localhost:11434/api/tags
-brew services restart ollama
+# Test connessione diretta
+curl -H "Content-Type: application/json" \
+     -H "x-goog-api-key: YOUR_API_KEY" \
+     -d '{"contents":[{"parts":[{"text":"Test"}]}]}' \
+     https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent
+
+# Verifica quota API (15 req/min free tier)
 ```
 
 ### Dispositivo Non Connesso
@@ -341,13 +403,19 @@ ls -la prompts/
 ```bash
 # 1. Apri app Contatti
 # 2. Esegui LogiDroid
-./logidroid_complete.sh
+./start_test.sh
 
-# Output esempio:
+# Output esempio con menu:
 # 📱 AZIONI PRECEDENTI:
 # 1. CLICK:Aggiungi → Schermata di creazione contatto
 # 2. FILL:Nome:Mario Rossi → Schermata di creazione contatto
-# 3. CLICK:Salva → Lista contatti
+# 
+# 🎯 COMANDI DISPONIBILI:
+# A. Clicca su "Salva"
+# B. Compila campo "Email"
+# C. Torna indietro
+#
+# Gemini risponde: A
 ```
 
 ### Debug Interfaccia
@@ -356,7 +424,7 @@ ls -la prompts/
 python3 xml_to_json.py test/xml/problem.xml test/json/debug.json
 python3 prompt_generator.py test/json/debug.json
 
-# Analizza elementi disponibili
+# Analizza elementi disponibili con menu
 ./adb_automator.sh test/json/debug.json list_elements
 ```
 
@@ -376,7 +444,7 @@ python3 prompt_generator.py test/json/debug.json
 mkdir -p test/{json,xml,screenshots,prompts}
 ```
 
-## � Documentazione Tecnica
+## 📚 Documentazione Tecnica
 
 ### Struttura JSON Elemento
 ```json
@@ -388,131 +456,38 @@ mkdir -p test/{json,xml,screenshots,prompts}
   "bounds": {"x": 0, "y": 0, "width": 100, "height": 50},
   "clickable": true,
   "editable": false,
-  "label": "Etichetta generata intelligentemente"
+  "label": "Etichetta generata per menu"
 }
 ```
 
-### Sistema di Etichettatura
-- **Campi testo**: `Nome (VUOTO) [pos:159,491]` o `Nome (COMPILATO: 'Mario') [pos:159,491]`
-- **Bottoni**: Usa `text`, `content_desc`, o `resource_id` in ordine di preferenza
-- **Coordinate**: Sempre incluse per debugging
+### Sistema Menu-Based v3.0
+- **Input automatici**: Sistema genera menu con opzioni A, B, C
+- **Risposte lettere**: Gemini risponde solo con lettere (A, B, C)
+- **Testo personalizzato**: Formato `F:Testo da scrivere`
+- **Zero parsing errors**: Eliminati errori di interpretazione
 
-## 🤝 Contribuire
+### Gemini 2.0 Flash Integration
+- **Model**: `gemini-2.0-flash-exp` (sperimentale, performance superiori)
+- **Free Tier**: 15 richieste/minuto gratuito
+- **Context**: 20 azioni precedenti per decisioni intelligenti
+- **Latency**: Cloud-based, ~1-2 secondi per risposta
 
-### Setup Sviluppo
+## 🔐 Sicurezza e Best Practices
+
+### ⚠️ IMPORTANTE - Sicurezza API Key
+
+### 🔒 **NON CONDIVIDERE MAI LA TUA API KEY**
+- ✅ La tua API key è in `config.json` (escluso dal git)
+- ❌ **NON** committare mai `config.json` nel repository
+- ❌ **NON** condividere screenshot con la tua API key visibile
+- ✅ Usa sempre `config_example.json` come template per altri
+
+### 🛡️ **Verifiche di Sicurezza**
 ```bash
-git clone https://github.com/MisterCioffi/LogiDroid
-cd LogiDroid
-chmod +x *.sh
+# Verifica che config.json sia nel .gitignore
+git status  # config.json NON deve apparire
+
+# Se config.json appare in git status:
+git reset config.json  # Rimuovilo dal staging
+echo "config.json" >> .gitignore  # Assicurati sia nel .gitignore
 ```
-
-### Test Suite
-```bash
-# Test conversione XML
-python3 xml_to_json.py ui_captures/1.xml test.json
-
-# Test generazione prompt
-python3 prompt_generator.py test.json
-
-# Test automazione
-./adb_automator.sh test.json list_elements
-```
-
-## 📄 Licenza
-
-MIT License - Vedi file LICENSE per dettagli.
-
-## � Links Utili
-
-- [Android Debug Bridge](https://developer.android.com/studio/command-line/adb)
-- [Ollama](https://ollama.ai/)
-- [UIAutomator](https://developer.android.com/training/testing/ui-automator)
-
----
-
-**LogiDroid v2.0** - Sistema di Automazione Android con Intelligenza Artificiale e Memoria 🤖📱
-# 2. Genera scenari test
-python3 prompt_generator.py test.json test
-# 3. Usa LLM per pianificare test completi
-```
-
-## 🚨 Troubleshooting
-
-### Dispositivo Non Connesso
-```bash
-# Verifica connessione
-adb devices
-
-# Se nessun dispositivo:
-# 1. Abilita "Opzioni sviluppatore" su Android
-# 2. Abilita "Debug USB"
-# 3. Autorizza computer quando richiesto
-```
-
-### Errori di Permessi
-```bash
-# Rendi eseguibili gli script
-chmod +x *.sh
-chmod +x *.py
-```
-
-### Cattura UI Fallisce
-```bash
-# Verifica che UIAutomator sia disponibile
-adb shell uiautomator dump --help
-
-# Se non disponibile, aggiorna Android SDK
-```
-
-## 🔬 Architettura Tecnica
-
-### 1. Cattura UI (UIAutomator)
-- Dump XML della struttura UI corrente
-- Estrazione elementi clickable ed editabili
-- Coordinate precise per automazione
-
-### 2. Processamento Intelligente
-- Parser XML ottimizzato (ElementTree)
-- Analisi contestuale per etichette automatiche
-- Filtro elementi rilevanti (bottoni, campi input)
-
-### 3. Generazione Prompt
-- Template strutturati per diversi use case
-- Context injection basato su package app
-- Formato output standardizzato JSON
-
-### 4. Automazione ADB
-- Comandi touch, input testo, navigazione
-- Error handling e feedback utente
-- Timing intelligente per animazioni
-
-## 📈 Ottimizzazioni
-
-- **Codice ridotto del 73%**: Da 670 a 183 righe nel parser principale
-- **Parser efficiente**: ElementTree con XPath ottimizzati
-- **Cache intelligente**: Riutilizzo dati JSON tra sessioni
-- **Error resilience**: Handling robusto errori ADB e parsing
-
-## 🤝 Contribuire
-
-1. Fork del repository
-2. Crea feature branch
-3. Commit con messaggi descrittivi
-4. Push e crea Pull Request
-
-## 📄 Licenza
-
-MIT License - Vedi file LICENSE per dettagli
-
-## 🔗 Collegamenti
-
-- [Android Debug Bridge](https://developer.android.com/studio/command-line/adb)
-- [UIAutomator](https://developer.android.com/training/testing/ui-automator)
-- [Android Accessibility](https://developer.android.com/guide/topics/ui/accessibility)
-
----
-
-**🎯 LogiDroid**: Dove l'automazione Android incontra l'intelligenza artificiale 🚀
-
-# LogiDroid
-LogiDroid: tool di testing per applicazioni Android basato sul prompt engineering, che guida le interazioni con l’app tramite intelligenza artificiale.

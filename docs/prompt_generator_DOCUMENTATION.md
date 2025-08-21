@@ -177,7 +177,7 @@ python3 prompt_generator.py test/json/result_123456.json true  # Prima iterazion
 
 ### **Dal Sistema LogiDroid**
 ```python
-# In llm_local.py
+# In llm_api.py
 cmd = ["python3", "prompt_generator.py", json_file, str(is_first_iteration).lower()]
 result = subprocess.run(cmd, capture_output=True, text=True)
 ui_prompt = result.stdout
@@ -277,7 +277,7 @@ action_history.json
     ↓ (genera prompt)
 Prompt Strutturato
     ↓ (invia a LLM)
-llm_local.py
+llm_api.py
     ↓ (riceve decisione)
 Comando Azione
     ↓ (salva in cronologia)
@@ -292,7 +292,7 @@ action_history.json (aggiornato)
 - `complete_instructions.txt` → Istruzioni LLM
 
 ### **Output per:**
-- `llm_local.py` → Prompt completo per analisi
+- `llm_api.py` → Prompt completo per analisi
 - LLM (Ollama) → Decisione azione da eseguire
 
 ### **Dati Chiave:**

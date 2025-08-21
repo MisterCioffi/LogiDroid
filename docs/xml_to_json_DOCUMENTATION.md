@@ -258,7 +258,7 @@ XML File
 JSON Strutturato
     ↓ (prompt_generator.py)  
 Prompt LLM
-    ↓ (llm_local.py)
+    ↓ (llm_api.py)
 Comando Azione
     ↓ (adb_automator.sh)
 Esecuzione su Dispositivo
