@@ -10,7 +10,7 @@ import sys
 import os
 
 def load_action_history(history_file: str = "test/prompts/action_history.json") -> list:
-    """Carica la cronologia delle azioni precedenti"""
+    """Carica la cronologia delle azioni precedenti dal file history_file"""
     try:
         if os.path.exists(history_file):
             with open(history_file, 'r', encoding='utf-8') as f:
@@ -46,7 +46,9 @@ def get_screen_context(data: dict) -> str:
     return context
 
 def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> str:
-    """Genera un prompt semplice che mostra gli elementi disponibili"""
+    """Genera un prompt semplice che mostra gli elementi disponibili 
+        suddividendo in bottoni e campi di testo"""
+    
     try:
         with open(json_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -92,47 +94,113 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
     
     # Aggiungi cronologia solo se NON è la prima iterazione
     if not is_first_iteration and history:
-        prompt += "🚫 ULTIME 10 AZIONI (NON RIPETERE QUESTE):\n"
-        for action_data in history[-10:]:
+        prompt += "🚫 AZIONI RECENTI DA VARIARE:\n"
+        recent_actions = history[-20:]  # Ultime 20 azioni per contesto molto ampio
+        
+        for action_data in recent_actions:
             action = action_data.get('action', 'N/A')
             prompt += f"• {action}\n"
-        prompt += "\n"
+        
+        prompt += "\n⚠️ Prova a scegliere qualcosa di diverso se possibile.\n\n"
     
-    prompt += "📱 INTERFACCIA:\n\n"
+    prompt += "📱 COMANDI DISPONIBILI - SCEGLI UNO:\n\n"
+
+    command_options = []
+    option_letter = 'A'
     
-    if text_fields:
-        prompt += "CAMPI:\n"
-        for i, field in enumerate(text_fields[:5], 1):  # Max 5 campi
-            # Rimuovi coordinate e semplifica
-            clean_field = field.split(' [pos:')[0]
-            prompt += f"{i}. {clean_field}\n"
-        prompt += "\n"
-    
+    # Aggiungi comandi CLICK per i bottoni
     if buttons:
-        prompt += "BOTTONI:\n"
-        for i, button in enumerate(buttons[:8], 1):  # Max 8 bottoni
-            prompt += f"{i}. {button}\n"
+        for button in buttons[:8]:  # Max 8 bottoni
+            command = f"CLICK:{button}"
+            command_options.append(command)
+            prompt += f"{option_letter}. {command}\n"
+            option_letter = chr(ord(option_letter) + 1)
+    
+    # Aggiungi comandi FILL per i campi di testo
+    if text_fields:
+        for field in text_fields[:5]:  # Max 5 campi
+            clean_field = field.split(' (')[0]  # Rimuovi (VUOTO)/(COMPILATO)
+            
+            # Genera alcuni valori di esempio appropriati
+            example_values = []
+            if "nome" in clean_field.lower():
+                example_values = ["Marco", "Luca"]
+            elif "email" in clean_field.lower():
+                example_values = ["test@email.com"]
+            elif "telefono" in clean_field.lower() or "tel" in clean_field.lower():
+                example_values = ["3331234567"]
+            elif "testo" in clean_field.lower() or "nota" in clean_field.lower():
+                example_values = ["Test automatico"]
+            else:
+                example_values = ["Test"]
+            
+            # Aggiungi 1-2 opzioni predefinite per campo
+            for value in example_values[:1]:
+                if option_letter <= 'Z':  # Max 26 opzioni
+                    command = f"FILL:{clean_field}:{value}"
+                    command_options.append(command)
+                    prompt += f"{option_letter}. {command}\n"
+                    option_letter = chr(ord(option_letter) + 1)
+            
+            # Aggiungi opzione per testo personalizzato
+            if option_letter <= 'Z':
+                command = f"FILL_CUSTOM:{clean_field}"
+                command_options.append(command)
+                prompt += f"{option_letter}. FILL_CUSTOM:{clean_field} (scrivi {option_letter}:TuoTesto)\n"
+                option_letter = chr(ord(option_letter) + 1)
+    
+    # Genera esempi specifici per questa schermata
+    examples = []
+    if command_options:
+        # Aggiungi alcuni esempi dalle opzioni reali disponibili
+        if len(command_options) >= 1:
+            first_cmd = command_options[0]
+            if first_cmd.startswith("CLICK:"):
+                examples.append("A")
+        
+        # Cerca un esempio di FILL_CUSTOM se presente
+        for i, cmd in enumerate(command_options):
+            if cmd.startswith("FILL_CUSTOM:"):
+                letter = chr(ord('A') + i)
+                field_name = cmd.split(':')[1]
+                if "nome" in field_name.lower():
+                    examples.append(f"{letter}:Mario Rossi")
+                elif "email" in field_name.lower():
+                    examples.append(f"{letter}:test@email.com")
+                elif "telefono" in field_name.lower():
+                    examples.append(f"{letter}:3331234567")
+                else:
+                    examples.append(f"{letter}:Testo esempio")
+                break
+    
+    prompt += f"\n💡 RISPOSTA RICHIESTA: Scrivi solo UNA lettera (A-{chr(ord(option_letter)-1)})\n"
+    
+    # Aggiungi esempi specifici se disponibili
+    if examples:
+        prompt += "\n✅ ESEMPI PER QUESTA SCHERMATA:\n"
+        for example in examples[:3]:  # Max 3 esempi
+            prompt += f"{example}\n"
         prompt += "\n"
+    
+    prompt += "⚠️ NON aggiungere spiegazioni, scrivi solo la lettera scelta.\n\n"
      
     return prompt
 
 def main():
     if len(sys.argv) < 2:
-        print("Uso: python3 prompt_generator.py <json_file> [is_first_iteration]")
+        print("Utilizza il comando: python3 prompt_generator.py <json_file> [is_first_iteration]")
         print("\nGenera un prompt che mostra gli elementi disponibili nella schermata")
         print("con memoria delle azioni precedenti per mantenere il filo conduttore")
         return
     
     json_file = sys.argv[1]
+    # Se il secondo argomento è 'true', significa che è la prima iterazione e non abbiamo memoria
     is_first_iteration = len(sys.argv) > 2 and sys.argv[2].lower() == 'true'
     
     try:
-        # Non salvare più qui - il salvataggio avviene solo in llm_local.py
-        # per evitare duplicazioni
-        
         prompt = generate_simple_prompt(json_file, is_first_iteration)
         print(prompt)
-        
+
     except Exception as e:
         print(f"Errore: {e}")
 

@@ -21,7 +21,39 @@ LogiDroid è un sistema all'avanguardia che combina cattura UI, analisi intellig
 - **🤖 LLM Locale**: Integrazione con Ollama per decisioni autonome
 - **⚡ Automazione Precisa**: Click centrati e gestione dinamica delle interfacce
 - **🎯 Esplorazione Autonoma**: L'LLM esplora le app mantenendo la logica delle azioni
-- **� Targeting Avanzato**: Riconoscimento intelligente dei controlli Android
+- **🔧 Targeting Avanzato**: Riconoscimento intelligente dei controlli Android
+
+## 🔒 Architettura Privacy-First
+
+### 🏠 **Sistema Completamente Locale**
+```
+🚫 NESSUNA CONNESSIONE INTERNET NECESSARIA 🚫
+
+┌─────────────────┐    HTTP localhost   ┌─────────────────┐
+│   LogiDroid     │◄──────────────────►│   Ollama Server │
+│                 │   127.0.0.1:11434   │   (tuo Mac)     │
+└─────────────────┘                     └─────────────────┘
+                                                 │
+                                                 ▼
+                                        ┌─────────────────┐
+                                        │  llama3.1:8b    │
+                                        │   4GB LOCALI    │
+                                        │   💾 TUO DISCO  │
+                                        └─────────────────┘
+```
+
+### 🛡️ **Privacy Totale Garantita**
+- ✅ **Zero Dati Esterni**: Tutto rimane sul tuo computer
+- ✅ **Funziona Offline**: Nessuna connessione internet richiesta
+- ✅ **Controllo Totale**: Il modello AI è completamente tuo
+- ✅ **Nessun Tracking**: Zero telemetria o log remoti
+- ✅ **Dati Sensibili Sicuri**: Screenshot e azioni mai inviate online
+
+### ⚡ **Perché HTTP per un Modello Locale?**
+- **Ollama Server**: Gestisce ottimizzazioni GPU/RAM automaticamente
+- **API Standard**: Interfaccia pulita e separazione responsabilità
+- **Caching Intelligente**: Mantiene il modello in memoria tra le chiamate
+- **Modelli Multipli**: Può servire diversi LLM contemporaneamente
 
 ## 🆕 Novità v2.0
 

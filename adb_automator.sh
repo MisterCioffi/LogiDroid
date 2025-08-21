@@ -292,11 +292,27 @@ for elem in data['elements']:
                 adb shell input tap $x $y
                 sleep 1
                 
-                # Cancellazione semplice
+                # Cancellazione robusta - seleziona tutto e poi cancella carattere per carattere
                 adb shell input keyevent KEYCODE_CTRL_A
                 sleep 0.3
                 adb shell input keyevent KEYCODE_DEL
                 sleep 0.3
+                
+                # Vai alla fine e cancella carattere per carattere per sicurezza
+                adb shell input keyevent KEYCODE_MOVE_END
+                sleep 0.2
+                
+                # Cancella fino a 30 caratteri per essere sicuri
+                for i in {1..30}; do
+                    adb shell input keyevent KEYCODE_DEL
+                    sleep 0.01
+                done
+                
+                # Cancella anche con BACKSPACE per sicurezza
+                for i in {1..15}; do
+                    adb shell input keyevent KEYCODE_BACKSPACE
+                    sleep 0.01
+                done
                 
                 # Inserimento testo semplice
                 adb shell input text "$value"
