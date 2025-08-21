@@ -1,7 +1,7 @@
 # 🧠 LogiDroid - Sistema Avanzato di Automazione Android con LLM
 
 <div align="center">
-  <img src="imm/Icona.png" alt="LogiDroid Logo" width="300" height="300">
+  <img src="imm/IconaLogiDroid.png" alt="LogiDroid Logo" width="300" height="300">
   <br><br>
   
   ![Version](https://img.shields.io/badge/version-2.0-blue.svg)

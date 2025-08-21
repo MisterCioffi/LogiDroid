@@ -9,4 +9,5 @@ test/
 *.jpeg
 
 # Eccezioni per file necessari
-!Icona.png
+!IconaLogiDroid.png
+!imm/
