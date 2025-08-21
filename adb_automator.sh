@@ -51,20 +51,34 @@ adb_type_text() {
     
     print_info "Digitando testo: '$text' ${description}"
     
-    # Assicurati che ci sia focus
-    sleep 0.5
+    # Pausa più lunga per assicurarsi che il campo sia pronto
+    sleep 1
     
-    # Escape caratteri speciali per ADB
-    local escaped_text=$(echo "$text" | sed 's/ /%s/g')
-    adb shell input text "$escaped_text"
+    # Inserimento diretto del testo
+    adb shell input text "$text"
     
     if [ $? -eq 0 ]; then
         print_success "Testo inserito"
-        sleep 1  # Pausa più lunga dopo inserimento
+        sleep 1  # Pausa dopo inserimento
     else
         print_error "Errore durante inserimento testo"
-        return 1
+        # Metodo backup: inserimento carattere per carattere solo in caso di errore
+        print_info "Tentativo con metodo alternativo carattere per carattere..."
+        for (( i=0; i<${#text}; i++ )); do
+            char="${text:$i:1}"
+            if [ "$char" = " " ]; then
+                adb shell input keyevent KEYCODE_SPACE
+            else
+                adb shell input text "$char"
+            fi
+            sleep 0.15  # Pausa più lunga tra caratteri
+        done
+        print_success "Testo inserito (metodo alternativo)"
+        sleep 1
     fi
+    
+    # Verifica finale che il testo sia stato inserito
+    sleep 0.5
 }
 
 adb_clear_field() {
@@ -74,21 +88,43 @@ adb_clear_field() {
     
     print_info "Cancellando campo ($x, $y) ${description}"
     
-    # Click sul campo per assicurare focus
+    # Strategia di focus intensiva per assicurare che il campo sia attivo
+    # Click multipli con pause per garantire focus
     adb shell input tap $x $y
-    sleep 0.8  # Pausa più lunga per focus
+    sleep 0.4
+    adb shell input tap $x $y
+    sleep 0.4
+    adb shell input tap $x $y
+    sleep 0.6
     
-    # Seleziona tutto e cancella (metodo 1)
+    # Assicurati che la tastiera sia nascosta prima di procedere
+    adb shell input keyevent KEYCODE_ESCAPE
+    sleep 0.2
+    
+    # Riattiva il campo
+    adb shell input tap $x $y
+    sleep 0.8
+    
+    # Metodo 1: Seleziona tutto e cancella
     adb shell input keyevent KEYCODE_CTRL_A
     sleep 0.3
     adb shell input keyevent KEYCODE_DEL
     sleep 0.3
     
-    # Metodo alternativo: cancella carattere per carattere se necessario
+    # Metodo 2: Vai alla fine e cancella carattere per carattere (più affidabile)
     adb shell input keyevent KEYCODE_MOVE_END
     sleep 0.2
+    
+    # Cancella fino a 50 caratteri (dovrebbe essere sufficiente)
     for i in {1..50}; do
         adb shell input keyevent KEYCODE_DEL
+        sleep 0.02  # Pausa molto breve tra le cancellazioni
+    done
+    
+    # Metodo 3: Alternativo con BACKSPACE
+    for i in {1..20}; do
+        adb shell input keyevent KEYCODE_BACKSPACE
+        sleep 0.02
     done
     
     print_success "Campo cancellato"
@@ -219,42 +255,54 @@ import json, sys
 with open('$json_file') as f:
     data = json.load(f)
 
-# Prima cerca campi vuoti con il nome specificato E dimensioni ragionevoli
+# Prima cerca il campo corretto per Nome: deve avere il resource_id specifico
 for elem in data['elements']:
     if elem['editable'] and '$target' in elem.get('label', ''):
-        current_text = elem.get('text', '').strip()
+        resource_id = elem.get('resource_id', '')
         bounds = elem.get('bounds', {})
         width = bounds.get('width', 0)
         height = bounds.get('height', 0)
-        if width > 10 and height > 10:  # Campo vuoto e dimensioni ragionevoli
+        # Per il campo Nome, cerca quello con nameEdit (campo principale)
+        if '$target' == 'Nome' and 'nameEdit' in resource_id and width > 50 and height > 20:
             center_x = bounds['x'] + width // 2
             center_y = bounds['y'] + height // 2
             print(f\"{center_x} {center_y}\")
             sys.exit(0)
 
-# Se non trova campi vuoti, cerca qualsiasi campo con quel nome E dimensioni ragionevoli
+# Per altri campi o come fallback, usa la logica standard con dimensioni grandi
 for elem in data['elements']:
     if elem['editable'] and '$target' in elem.get('label', ''):
         bounds = elem.get('bounds', {})
         width = bounds.get('width', 0)
         height = bounds.get('height', 0)
-        if width > 10 and height > 10:  # Dimensioni ragionevoli
+        # Priorità ai campi con dimensioni significative (almeno 50x20)
+        if width > 50 and height > 20:  # Campo con dimensioni ragionevoli
             center_x = bounds['x'] + width // 2
             center_y = bounds['y'] + height // 2
             print(f\"{center_x} {center_y}\")
-            break
+            sys.exit(0)
 ")
             if [ -n "$coords" ]; then
                 local x=$(echo $coords | cut -d' ' -f1)
                 local y=$(echo $coords | cut -d' ' -f2)
                 
                 print_info "Focusing campo ($x, $y) - campo '$target'"
-                # Click esplicito per dare focus
-                adb shell input tap $x $y
-                sleep 1  # Pausa per focus
                 
-                adb_clear_field $x $y "campo '$target'"
-                adb_type_text "$value" "nel campo '$target'"
+                # Click semplice per dare focus
+                adb shell input tap $x $y
+                sleep 1
+                
+                # Cancellazione semplice
+                adb shell input keyevent KEYCODE_CTRL_A
+                sleep 0.3
+                adb shell input keyevent KEYCODE_DEL
+                sleep 0.3
+                
+                # Inserimento testo semplice
+                adb shell input text "$value"
+                sleep 0.5
+                
+                print_success "Testo inserito"
             else
                 print_error "Campo '$target' non trovato"
                 return 1

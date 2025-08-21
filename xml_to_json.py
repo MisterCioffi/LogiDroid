@@ -10,16 +10,21 @@ import sys
 import os
 from datetime import datetime
 
+# Funzione per analizzare le coordinate
 def parse_bounds(bounds_str):
-    """Converte '[x1,y1][x2,y2]' in coordinate"""
+    """
+    Riceve in ingresso una stringa di coordinate come '[x1,y1][x2,y2]'
+    e restituisce un dizionario con le coordinate centrali e dimensioni.
+    Se la stringa è vuota o non valida, restituisce None.
+    """
     if not bounds_str:
         return None
     try:
         coords = bounds_str.replace('[', '').replace(']', ',').split(',')
         x1, y1, x2, y2 = int(coords[0]), int(coords[1]), int(coords[2]), int(coords[3])
         return {
-            'x': (x1 + x2) // 2,  # centro x
-            'y': (y1 + y2) // 2,  # centro y  
+            'x': (x1 + x2) // 2,  # centro bottone coordinate x
+            'y': (y1 + y2) // 2,  # centro bottone coordinate y
             'width': x2 - x1,
             'height': y2 - y1
         }
@@ -29,23 +34,22 @@ def parse_bounds(bounds_str):
 def extract_elements(node, elements=[], text_nodes=[]):
     """Estrae tutti gli elementi interessanti dall'XML"""
     attrs = node.attrib
-    
-    # Info base
-    bounds = parse_bounds(attrs.get('bounds', ''))
-    text = attrs.get('text', '').strip()
-    resource_id = attrs.get('resource-id', '').strip()
-    hint = attrs.get('hint', '').strip()
-    content_desc = attrs.get('content-desc', '').strip()
-    clickable = attrs.get('clickable', 'false') == 'true'
+
+    # Informazioni base
+    bounds = parse_bounds(attrs.get('bounds', '')) # viene chiamata per ottenere le coordinate
+    text = attrs.get('text', '').strip() #testo del nodo
+    resource_id = attrs.get('resource-id', '').strip() #identificatore univoco del nodo
+    hint = attrs.get('hint', '').strip() # suggerimento per il campo di testo
+    content_desc = attrs.get('content-desc', '').strip() # descrizione del contenuto per accessibilità
+    clickable = attrs.get('clickable', 'false') == 'true' # è cliccabile?
+
+    # Normalizziamo il class_name per classificare il nodo in:
+    # - pulsante (button)
+    # - campo di testo (edittext)
+    # - etichetta (textview)
     class_name = attrs.get('class', '').lower()
-    
-    # È un pulsante?
     is_button = ('button' in class_name or clickable) and 'edittext' not in class_name
-    
-    # È un campo di testo?
     is_edittext = 'edittext' in class_name
-    
-    # È un TextView con testo (possibile etichetta)?
     is_textview = 'textview' in class_name and text and not clickable
     
     # Raccogli elementi utili
@@ -122,12 +126,12 @@ def find_label_for_button(button, text_nodes):
 def xml_to_json(xml_file):
     """Converte XML UIAutomator in JSON pulito"""
     try:
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
+        tree = ET.parse(xml_file) #dato un xml fornise un albero formato da nodi
+        root = tree.getroot()  #ottiene il nodo radice dell'albero
         
         # Estrai tutti gli elementi
-        elements = []
-        text_nodes = []
+        elements = [] #lista di bottoni o campi di testo
+        text_nodes = [] #lista di nodi di testo (TextView)
         
         for child in root:
             extract_elements(child, elements, text_nodes)
@@ -155,8 +159,13 @@ def xml_to_json(xml_file):
         raise Exception(f"Errore: {e}")
 
 def main():
+    """
+    sys.argv[0] = nome dello script (xml_to_json_simple.py)
+    sys.argv[1] = primo argomento dopo lo script (il file .xml)
+    sys.argv[2] = eventuale secondo argomento (il file .json)
+    """
     if len(sys.argv) < 2:
-        print("Uso: python3 xml_to_json_simple.py file.xml [output.json]")
+        print("Utilizza un comando del tipo: python3 xml_to_json_simple.py file.xml [output.json]")
         sys.exit(1)
     
     xml_file = sys.argv[1]
