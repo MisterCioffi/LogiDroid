@@ -21,9 +21,9 @@ Ti verrà mostrata una lista di comandi disponibili con lettere (A, B, C, etc.)
 
 ⚠️ IMPORTANTE: 
 - Per bottoni: scrivi SOLO la lettera (A, B, C...)
-- Per testo personalizzato: scrivi Lettera:TuoTesto (es: F:Mario Rossi)
+- Per testo personalizzato: scrivi Lettera:TuoTesto
 
-❌ ESEMPI SBAGLIATI:
+<!-- ❌ ESEMPI SBAGLIATI:
 - Non scrivere "Scelgo A" o spiegazioni
 - Non aggiungere frasi
-- Non commentare la scelta
+- Non commentare la scelta -->

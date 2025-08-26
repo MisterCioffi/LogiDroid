@@ -148,39 +148,8 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
                 command_options.append(command)
                 prompt += f"{option_letter}. FILL_CUSTOM:{clean_field} (scrivi {option_letter}:TuoTesto)\n"
                 option_letter = chr(ord(option_letter) + 1)
-    
-    # Genera esempi specifici per questa schermata
-    examples = []
-    if command_options:
-        # Aggiungi alcuni esempi dalle opzioni reali disponibili
-        if len(command_options) >= 1:
-            first_cmd = command_options[0]
-            if first_cmd.startswith("CLICK:"):
-                examples.append("A")
-        
-        # Cerca un esempio di FILL_CUSTOM se presente
-        for i, cmd in enumerate(command_options):
-            if cmd.startswith("FILL_CUSTOM:"):
-                letter = chr(ord('A') + i)
-                field_name = cmd.split(':')[1]
-                if "nome" in field_name.lower():
-                    examples.append(f"{letter}:Mario Rossi")
-                elif "email" in field_name.lower():
-                    examples.append(f"{letter}:test@email.com")
-                elif "telefono" in field_name.lower():
-                    examples.append(f"{letter}:3331234567")
-                else:
-                    examples.append(f"{letter}:Testo esempio")
-                break
-    
+
     prompt += f"\n💡 RISPOSTA RICHIESTA: Scrivi solo UNA lettera (A-{chr(ord(option_letter)-1)})\n"
-    
-    # Aggiungi esempi specifici se disponibili
-    if examples:
-        prompt += "\n✅ ESEMPI PER QUESTA SCHERMATA:\n"
-        for example in examples[:3]:  # Max 3 esempi
-            prompt += f"{example}\n"
-        prompt += "\n"
     
     prompt += "⚠️ NON aggiungere spiegazioni, scrivi solo la lettera scelta.\n\n"
      

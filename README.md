@@ -2,7 +2,7 @@
 
 
 <div align="center">
-  <img src="imm/IconaLogiDroid.png" alt="LogiDroid Logo" width="600" height="600">
+  <img src="imm/IconaLogi.png" alt="LogiDroid Logo" width="600" height="600">
   <br><br>
 
 
