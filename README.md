@@ -15,7 +15,7 @@ LogiDroid automatizza le app Android combinando **cattura UI**, **analisi AI** e
 ## 🔄 Workflow del Sistema
 
 <div align="center">
-  <img src="imm/Workflow.png" alt="LogiDroid Workflow" width="800">
+  <img src="imm/Workflow2.png" alt="LogiDroid Workflow" width="800">
 </div>
 
 ### **� 1. Cattura UI**
