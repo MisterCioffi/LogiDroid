@@ -134,15 +134,7 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
             else:
                 example_values = ["Test"]
             
-            # Aggiungi 1-2 opzioni predefinite per campo
-            for value in example_values[:1]:
-                if option_letter <= 'Z':  # Max 26 opzioni
-                    command = f"FILL:{clean_field}:{value}"
-                    command_options.append(command)
-                    prompt += f"{option_letter}. {command}\n"
-                    option_letter = chr(ord(option_letter) + 1)
-            
-            # Aggiungi opzione per testo personalizzato
+            # Aggiungi solo opzione per testo personalizzato (rimossi esempi fissi)
             if option_letter <= 'Z':
                 command = f"FILL_CUSTOM:{clean_field}"
                 command_options.append(command)
