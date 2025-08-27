@@ -121,9 +121,26 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
     command_options = []
     option_letter = 'A'
     
-    # Aggiungi comandi CLICK per i bottoni
+    # Aggiungi comandi CLICK per i bottoni con prioritizzazione intelligente
     if buttons:
-        for button in buttons[:8]:  # Max 8 bottoni
+        # Prioritizza bottoni importanti
+        priority_keywords = ["salva", "save", "ok", "conferma", "annulla", "cancel", "indietro", "back", "fine", "done"]
+        
+        # Separa bottoni prioritari e normali
+        priority_buttons = []
+        normal_buttons = []
+        
+        for button in buttons:
+            button_lower = button.lower()
+            if any(keyword in button_lower for keyword in priority_keywords):
+                priority_buttons.append(button)
+            else:
+                normal_buttons.append(button)
+        
+        # Combina prioritari + normali, senza limite (mostra tutti)
+        selected_buttons = priority_buttons + normal_buttons
+        
+        for button in selected_buttons:  # Mostra tutti i bottoni
             command = f"CLICK:{button}"
             command_options.append(command)
             prompt += f"{option_letter}. {command}\n"
