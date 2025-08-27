@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-LogiDroid LLM con Google Gemini 2.0 Flash
-Sistema intelligente di automazione UI Android con AI gratuita
+LogiDroid LLM con Google Gemini 2.0 Flash + Random Injection
+Sistema intelligente di automazione UI Android con AI gratuita e azioni casuali
 """
 
 import requests
@@ -11,6 +11,7 @@ import subprocess
 import os
 import re
 from datetime import datetime
+from random_injector import RandomActionInjector
 
 def load_config():
     """Carica configurazione da config.json"""
@@ -187,6 +188,9 @@ def main():
     json_file = sys.argv[1]
     print(f"📁 Analizzando: {json_file}")
     
+    # 🎲 INIZIALIZZA RANDOM INJECTOR
+    random_injector = RandomActionInjector(frequency=6)  # Ogni 6 iterazioni
+    
     # Verifica se è la prima iterazione
     history_file = "test/prompts/action_history.json"
     is_first_iteration = True
@@ -197,8 +201,32 @@ def main():
             with open(history_file, 'r', encoding='utf-8') as f:
                 history = json.load(f)
                 is_first_iteration = len(history) == 0
-        except:
+        except Exception as e:
+            print(f"⚠️ Error loading history: {e}")
             is_first_iteration = True
+    
+    # 🎲 CONTROLLO RANDOM INJECTION PRIMA DELL'LLM
+    if not is_first_iteration and random_injector.should_inject_random():
+        print("🎲 " + "="*60)
+        print("🎲 RANDOM INJECTION TRIGGERED - SKIPPING LLM THIS ITERATION")
+        print("🎲 " + "="*60)
+        
+        # Esegui ciclo random completo
+        new_json_file = random_injector.full_random_cycle()
+        
+        if new_json_file:
+            print(f"✅ Random injection successful!")
+            print(f"📱 New screen captured: {new_json_file}")
+            print("🔄 Next iteration will analyze the new screen with LLM")
+            
+            # IMPORTANTE: Richiama se stesso con la nuova schermata
+            print("🔄 Restarting analysis with new screen...")
+            subprocess.run(["python3", "llm_api.py", new_json_file])
+            return
+        else:
+            print("❌ Random injection failed, continuing with normal flow...")
+    
+    # Continua con normale workflow LLM solo se non c'è stata random injection
     
     # Genera prompt UI
     print("📱 Generando prompt interfaccia...")
