@@ -89,12 +89,24 @@ def call_gemini_api(prompt):
         return None
 
 def is_obvious_loop(action, history):
-    """Rileva solo loop evidenti (stessa azione 3+ volte consecutive)"""
-    if not history or len(history) < 3:
+    """Rileva loop evidenti e azioni già fallite"""
+    if not history:
         return False
     
-    last_3_actions = [h.get('action', '') for h in history[-3:]]
-    return all(a == action for a in last_3_actions)
+    # 1. Loop tradizionale: stessa azione 3+ volte consecutive
+    if len(history) >= 3:
+        last_3_actions = [h.get('action', '') for h in history[-3:]]
+        if all(a == action for a in last_3_actions):
+            return True
+    
+    # 2. NUOVO: Evita azioni che sono già fallite recentemente
+    recent_history = history[-5:]  # Ultimi 5 tentativi
+    for entry in recent_history:
+        if entry.get('action', '') == action and not entry.get('success', True):
+            print(f"🚫 Azione già fallita recentemente: {action}")
+            return True
+    
+    return False
 
 def extract_command_from_letter(response, ui_prompt):
     """Estrae comando dalla risposta dell'LLM (lettera o lettera:testo)"""
@@ -128,8 +140,8 @@ def extract_command_from_letter(response, ui_prompt):
     
     return None
 
-def save_last_action(action):
-    """Salva l'ultima azione per anti-ripetizione"""
+def save_last_action(action, success=True, error_message=""):
+    """Salva l'ultima azione per anti-ripetizione con stato di successo/errore"""
     try:
         # Sistema unificato action_history.json
         history_file = "test/prompts/action_history.json"
@@ -141,12 +153,15 @@ def save_last_action(action):
             with open(history_file, 'r', encoding='utf-8') as f:
                 history = json.load(f)
         
-        # Aggiungi la nuova azione
-        history.append({
+        # Aggiungi la nuova azione con status
+        entry = {
             "timestamp": datetime.now().isoformat(),
             "action": action,
-            "screen": "Azione completata"
-        })
+            "success": success,
+            "screen": "Azione completata" if success else f"ERRORE: {error_message}"
+        }
+        
+        history.append(entry)
         
         # Mantieni solo le ultime 10 azioni
         if len(history) > 10:
@@ -157,8 +172,9 @@ def save_last_action(action):
             json.dump(history, f, indent=2, ensure_ascii=False)
             
         # Fallback di sicurezza
+        status_text = "SUCCESS" if success else f"ERROR: {error_message}"
         with open(PREVIOUS_ACTION_FILE, 'w') as f:
-            f.write(action)
+            f.write(f"{action} | {status_text}")
             
     except Exception as e:
         print(f"Errore nel salvare azione: {e}")
@@ -270,8 +286,24 @@ def main():
     if result.stderr:
         print(f"⚠️ {result.stderr}")
     
-    # Salva azione per cronologia
-    save_last_action(action_performed)
+    # Controllo del successo dell'operazione
+    success = result.returncode == 0
+    error_message = ""
+    
+    # Controlla se ci sono messaggi di errore specifici nell'output
+    output_text = result.stdout + result.stderr
+    if not success or "non trovato" in output_text.lower() or "errore" in output_text.lower():
+        success = False
+        error_message = "Comando fallito o elemento non trovato"
+    
+    # Salva azione per cronologia CON stato di successo/errore
+    save_last_action(action_performed, success, error_message)
+    
+    if not success:
+        print(f"❌ Azione fallita: {action_performed}")
+        print(f"🚫 Motivo: {error_message}")
+    else:
+        print(f"✅ Azione completata: {action_performed}")
 
 if __name__ == "__main__":
     main()

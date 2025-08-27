@@ -97,9 +97,22 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
         prompt += "🚫 AZIONI RECENTI DA VARIARE:\n"
         recent_actions = history[-20:]  # Ultime 20 azioni per contesto molto ampio
         
+        failed_actions = []
+        successful_actions = []
+        
         for action_data in recent_actions:
             action = action_data.get('action', 'N/A')
-            prompt += f"• {action}\n"
+            success = action_data.get('success', True)  # Default True per retrocompatibilità
+            
+            if not success:
+                failed_actions.append(action)
+                prompt += f"❌ {action} (FALLITA - NON RIPETERE!)\n"
+            else:
+                successful_actions.append(action)
+                prompt += f"• {action}\n"
+        
+        if failed_actions:
+            prompt += f"\n🚨 ATTENZIONE: {len(failed_actions)} azioni fallite sopra - NON ripeterle!\n"
         
         prompt += "\n⚠️ Prova a scegliere qualcosa di diverso se possibile.\n\n"
     

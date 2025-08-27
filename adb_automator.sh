@@ -281,6 +281,17 @@ for elem in data['elements']:
             center_y = bounds['y'] + height // 2
             print(f\"{center_x} {center_y}\")
             sys.exit(0)
+
+# ULTIMA OPZIONE: Se non trova campi grandi, prova anche i piccoli (per E-mail, etc.)
+for elem in data['elements']:
+    if elem['editable'] and '$target' in elem.get('label', ''):
+        bounds = elem.get('bounds', {})
+        width = bounds.get('width', 0)
+        height = bounds.get('height', 0)
+        center_x = bounds['x'] + width // 2
+        center_y = bounds['y'] + height // 2
+        print(f\"{center_x} {center_y}\")
+        sys.exit(0)
 ")
             if [ -n "$coords" ]; then
                 local x=$(echo $coords | cut -d' ' -f1)
@@ -320,8 +331,158 @@ for elem in data['elements']:
                 
                 print_success "Testo inserito"
             else
-                print_error "Campo '$target' non trovato"
-                return 1
+                print_warning "Campo editabile '$target' non trovato o troppo piccolo"
+                print_info "Tentativo di attivare il campo cliccando sul bottone '$target'..."
+                
+                # Cerca un bottone con lo stesso nome per attivare il campo
+                local button_coords=$(python3 -c "
+import json, sys
+with open('$json_file') as f:
+    data = json.load(f)
+
+# Cerca un bottone clickable con il nome del target
+for elem in data['elements']:
+    if elem['clickable'] and not elem.get('editable', False):
+        # Controlla text, content_desc, o label
+        button_text = elem.get('text', '') or elem.get('content_desc', '') or elem.get('label', '')
+        if '$target' in button_text:
+            bounds = elem.get('bounds', {})
+            width = bounds.get('width', 0)
+            height = bounds.get('height', 0)
+            if width > 20 and height > 20:  # Bottone con dimensioni ragionevoli
+                center_x = bounds['x'] + width // 2
+                center_y = bounds['y'] + height // 2
+                print(f\"{center_x} {center_y}\")
+                sys.exit(0)
+")
+                
+                if [ -n "$button_coords" ]; then
+                    local btn_x=$(echo $button_coords | cut -d' ' -f1)
+                    local btn_y=$(echo $button_coords | cut -d' ' -f2)
+                    
+                    print_info "Cliccando bottone '$target' su ($btn_x, $btn_y)..."
+                    adb shell input tap $btn_x $btn_y
+                    sleep 2  # Attendi che appaia il campo
+                    
+                    print_info "Catturando nuova schermata dopo attivazione..."
+                    
+                    # Cattura nuova schermata per riflettere i cambiamenti UI
+                    local timestamp=$(date +%s)
+                    local new_xml="test/xml/current_post_click_${timestamp}.xml"
+                    local new_json="test/json/result_post_click_${timestamp}.json"
+                    
+                    adb shell uiautomator dump /sdcard/ui_dump_new.xml
+                    adb pull /sdcard/ui_dump_new.xml "$new_xml"
+                    python3 xml_to_json.py "$new_xml" "$new_json"
+                    
+                    print_info "Ritentando ricerca campo editabile con nuova schermata..."
+                    
+                    # Riprova a cercare il campo editabile con il nuovo JSON
+                    local retry_coords=$(python3 -c "
+import json, sys
+with open('$new_json') as f:
+    data = json.load(f)
+
+# Logica speciale per il telefono: dopo click, trova il campo che si è appena attivato
+if '$target' == 'Telefono':
+    # Strategia Samsung: il campo non si espande, ma diventa scrivibile nella stessa posizione
+    # Prova a scrivere direttamente sul campo telefono originale anche se piccolo
+    for elem in data['elements']:
+        if elem['editable'] and 'Telefono' in elem.get('label', ''):
+            bounds = elem.get('bounds', {})
+            width = bounds.get('width', 0)
+            height = bounds.get('height', 0)
+            center_x = bounds['x'] + width // 2
+            center_y = bounds['y'] + height // 2
+            print(f\"{center_x} {center_y}\")
+            sys.exit(0)
+    
+    # Se non trova il campo telefono editable, usa la posizione appena sotto il bottone
+    # Spesso su Samsung il campo input appare sotto il bottone attivatore
+    estimated_x = $btn_x
+    estimated_y = $btn_y + 50  # 50px sotto il bottone
+    print(f\"{estimated_x} {estimated_y}\")
+    sys.exit(0)
+else:
+    # Per altri campi, usa la logica normale
+    # 1. Prima cerca con il nome esatto e dimensioni grandi
+    for elem in data['elements']:
+        if elem['editable'] and '$target' in elem.get('label', ''):
+            bounds = elem.get('bounds', {})
+            width = bounds.get('width', 0)
+            bounds = elem.get('bounds', {})
+            width = bounds.get('width', 0)
+            height = bounds.get('height', 0)
+            if width > 50 and height > 20:  # Campo con dimensioni ragionevoli
+                center_x = bounds['x'] + width // 2
+                center_y = bounds['y'] + height // 2
+                print(f\"{center_x} {center_y}\")
+                sys.exit(0)
+
+# 2. Se non trova, cerca campi editabili con dimensioni grandi (probabilmente l'ultimo aggiunto)
+largest_field = None
+largest_size = 0
+for elem in data['elements']:
+    if elem['editable']:
+        bounds = elem.get('bounds', {})
+        width = bounds.get('width', 0)
+        height = bounds.get('height', 0)
+        size = width * height
+        if size > largest_size and width > 100 and height > 30:  # Campo significativo
+            largest_size = size
+            largest_field = elem
+
+if largest_field:
+    bounds = largest_field.get('bounds', {})
+    center_x = bounds['x'] + bounds['width'] // 2
+    center_y = bounds['y'] + bounds['height'] // 2
+    print(f\"{center_x} {center_y}\")
+    sys.exit(0)
+
+# 3. Come ultima risorsa, cerca per resource_id correlati al telefono
+for elem in data['elements']:
+    if elem['editable']:
+        resource_id = elem.get('resource_id', '').lower()
+        if 'phone' in resource_id or 'number' in resource_id or 'edit' in resource_id:
+            bounds = elem.get('bounds', {})
+            width = bounds.get('width', 0)
+            height = bounds.get('height', 0)
+            if width > 50 and height > 20:
+                center_x = bounds['x'] + width // 2
+                center_y = bounds['y'] + height // 2
+                print(f\"{center_x} {center_y}\")
+                sys.exit(0)
+")
+                    
+                    if [ -n "$retry_coords" ]; then
+                        local retry_x=$(echo $retry_coords | cut -d' ' -f1)
+                        local retry_y=$(echo $retry_coords | cut -d' ' -f2)
+                        
+                        print_success "Campo '$target' trovato dopo attivazione!"
+                        print_info "Compilando campo su ($retry_x, $retry_y)..."
+                        
+                        # Compila il campo trovato
+                        adb shell input tap $retry_x $retry_y
+                        sleep 1
+                        
+                        # Cancella contenuto esistente
+                        adb shell input keyevent KEYCODE_CTRL_A
+                        sleep 0.3
+                        adb shell input keyevent KEYCODE_DEL
+                        
+                        # Inserisci il nuovo testo
+                        adb shell input text "$value"
+                        sleep 0.5
+                        
+                        print_success "Campo '$target' compilato con successo!"
+                    else
+                        print_error "Campo '$target' ancora non trovato dopo attivazione"
+                        return 1
+                    fi
+                else
+                    print_error "Bottone '$target' non trovato per attivare il campo"
+                    return 1
+                fi
             fi
             ;;
             
