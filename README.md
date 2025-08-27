@@ -2,7 +2,7 @@
 
 
 <div align="center">
-  <img src="imm/IconaLogi.png" alt="LogiDroid Logo" width="600" height="600">
+  <img src="imm/IconaLogi.png" alt="LogiDroid Logo" width="500" height="500">
   <br><br>
 
 
@@ -74,6 +74,74 @@ LogiDroid è un sistema all'avanguardia che combina cattura UI, analisi intellig
 - **Affidabilità**: Zero crash, sempre disponibile
 - **Gratuito**: Nessun costo hardware aggiuntivo
 - **Aggiornamenti**: Sempre l'ultima versione senza installazioni
+
+## 🔄 Workflow di Automazione
+
+<div align="center">
+  <img src="imm/Workflow.png" alt="LogiDroid Workflow" width="800">
+  <br><br>
+</div>
+
+### 📋 **Flusso degli Eventi - Processo Completo**
+
+Il sistema LogiDroid segue un workflow ciclico e intelligente che combina cattura, analisi AI e automazione:
+
+#### **🎯 Fase 1: Inizializzazione**
+```
+1️⃣ Verifica Prerequisiti
+   ├── 📱 Dispositivo Android connesso (adb devices)
+   ├── 🔑 API Key Gemini configurata
+   └── 🧠 Gemini 2.0 Flash disponibile
+```
+
+#### **📸 Fase 2: Cattura Stato Attuale**
+```
+2️⃣ Acquisizione Interfaccia
+   ├── 📷 Screenshot PNG → test/screenshots/screen_TIMESTAMP.png
+   ├── 🏗️ UI XML Dump → test/xml/current_TIMESTAMP.xml
+   └── 🔄 Conversione JSON → test/json/result_current_TIMESTAMP.json
+```
+
+#### **🧠 Fase 3: Analisi Intelligente**
+```
+3️⃣ Elaborazione Gemini 2.0 Flash
+   ├── 📋 Carica cronologia azioni (max 20)
+   ├── 🎯 Genera menu comandi (A, B, C...)
+   ├── 🧠 Invia prompt strutturato a Gemini
+   └── ⚡ Riceve decisione (lettera o lettera:testo)
+```
+
+#### **⚡ Fase 4: Esecuzione Azione**
+```
+4️⃣ Automazione ADB
+   ├── 🎯 CLICK: adb shell input tap X Y
+   ├── ✏️ FILL: adb shell input text "valore"
+   ├── 📱 Gestione interfacce dinamiche
+   └── ⏱️ Attesa stabilizzazione UI (2s)
+```
+
+#### **💾 Fase 5: Memorizzazione e Loop**
+```
+5️⃣ Aggiornamento Stato
+   ├── 📝 Salva azione in action_history.json
+   ├── 🔄 Cattura NUOVA schermata post-azione
+   ├── 🧠 Aggiorna memoria per prossima iterazione
+   └── 🔁 Ritorna a Fase 2 (Loop Continuo)
+```
+
+### 🎮 **Intelligenza del Sistema**
+
+#### **📊 Menu-Based Decision System**
+- **Input Strutturato**: Gemini riceve comandi già formattati (A, B, C...)
+- **Zero Parsing Errors**: Elimina errori di interpretazione formato
+- **Testo Personalizzato**: Supporto `F:Mario Rossi` per input custom
+- **Memoria Contestuale**: 20 azioni precedenti per decisioni strategiche
+
+#### **🎯 Strategia di Esplorazione**
+- **Prevenzione Loop**: Rileva azioni ripetitive e suggerisce alternative
+- **Riconoscimento Vicoli Ciechi**: Torna indietro quando necessario
+- **Priorità Logiche**: Compila campi prima di salvare, esplora sezioni nuove
+- **Adattamento Dinamico**: Si adatta a interfacce diverse automaticamente
 
 ## 🆕 Novità v3.0
 
