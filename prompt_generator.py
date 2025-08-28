@@ -121,6 +121,11 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
     command_options = []
     option_letter = 'A'
     
+    # SEMPRE aggiungere comando BACK come prima opzione
+    command_options.append("BACK")
+    prompt += f"{option_letter}. BACK (torna alla schermata precedente)\n"
+    option_letter = chr(ord(option_letter) + 1)
+    
     # Aggiungi comandi CLICK per i bottoni con prioritizzazione intelligente
     if buttons:
         # Prioritizza bottoni importanti

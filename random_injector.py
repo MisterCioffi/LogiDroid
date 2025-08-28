@@ -29,11 +29,8 @@ class RandomActionInjector:
         # Carica contatore persistente
         self.action_count = self._load_action_count()
         
-        # Lista azioni configurabile
-        default_actions = [
-            "BACK", "SWIPE_UP", "SWIPE_DOWN", "SWIPE_LEFT", 
-            "SWIPE_RIGHT", "LONG_PRESS_CENTER", "HOME", "MENU"
-        ]
+        # Lista azioni configurabile - Solo swipe verticali
+        default_actions = ["SWIPE_UP", "SWIPE_DOWN"]
         self.random_actions = random_config.get("actions", default_actions)
         
         print(f"🎲 Random Injector initialized:")
@@ -119,11 +116,7 @@ class RandomActionInjector:
         print(f"🎲 EXECUTING RANDOM ACTION: {action}")
         
         try:
-            if action == "BACK":
-                subprocess.run(["adb", "shell", "input", "keyevent", "KEYCODE_BACK"], check=True)
-                print("⬅️ Executed: BACK button")
-                
-            elif action == "SWIPE_UP":
+            if action == "SWIPE_UP":
                 # Swipe dal centro-basso verso centro-alto
                 subprocess.run(["adb", "shell", "input", "swipe", "540", "1500", "540", "500"], check=True)
                 print("⬆️ Executed: SWIPE UP")
@@ -132,29 +125,6 @@ class RandomActionInjector:
                 # Swipe dal centro-alto verso centro-basso
                 subprocess.run(["adb", "shell", "input", "swipe", "540", "500", "540", "1500"], check=True)
                 print("⬇️ Executed: SWIPE DOWN")
-                
-            elif action == "SWIPE_LEFT":
-                # Swipe da destra verso sinistra
-                subprocess.run(["adb", "shell", "input", "swipe", "900", "1000", "200", "1000"], check=True)
-                print("⬅️ Executed: SWIPE LEFT")
-                
-            elif action == "SWIPE_RIGHT":
-                # Swipe da sinistra verso destra
-                subprocess.run(["adb", "shell", "input", "swipe", "200", "1000", "900", "1000"], check=True)
-                print("➡️ Executed: SWIPE RIGHT")
-                
-            elif action == "LONG_PRESS_CENTER":
-                # Long press al centro dello schermo (2 secondi)
-                subprocess.run(["adb", "shell", "input", "swipe", "540", "1000", "540", "1000", "2000"], check=True)
-                print("👆 Executed: LONG PRESS CENTER")
-                
-            elif action == "HOME":
-                subprocess.run(["adb", "shell", "input", "keyevent", "KEYCODE_HOME"], check=True)
-                print("🏠 Executed: HOME button")
-                
-            elif action == "MENU":
-                subprocess.run(["adb", "shell", "input", "keyevent", "KEYCODE_MENU"], check=True)
-                print("📋 Executed: MENU button")
                 
             else:
                 print(f"❌ Unknown random action: {action}")

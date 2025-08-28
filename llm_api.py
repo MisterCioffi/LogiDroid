@@ -10,6 +10,7 @@ import sys
 import subprocess
 import os
 import re
+import time
 from datetime import datetime
 from random_injector import RandomActionInjector
 
@@ -46,8 +47,39 @@ if not GEMINI_API_KEY or GEMINI_API_KEY == "your-google-gemini-api-key-here":
 # File per memorizzare l'azione precedente (fallback di sicurezza)
 PREVIOUS_ACTION_FILE = "test/prompts/last_action.txt"
 
+# Rate limiting - 15 richieste/minuto = 1 richiesta ogni 4 secondi
+RATE_LIMIT_FILE = "test/prompts/last_api_call.txt"
+RATE_LIMIT_DELAY = 4  # secondi tra chiamate
+
+def enforce_rate_limit():
+    """Applica rate limiting per rispettare i limiti di Gemini API (15 req/min)"""
+    try:
+        if os.path.exists(RATE_LIMIT_FILE):
+            with open(RATE_LIMIT_FILE, 'r') as f:
+                last_call_time = float(f.read().strip())
+            
+            time_since_last = time.time() - last_call_time
+            if time_since_last < RATE_LIMIT_DELAY:
+                sleep_time = RATE_LIMIT_DELAY - time_since_last
+                print(f"⏳ Rate limiting: aspetto {sleep_time:.1f}s per rispettare i limiti API...")
+                time.sleep(sleep_time)
+    except:
+        pass  # Se c'è un errore, procedi senza delay
+    
+    # Salva timestamp chiamata corrente
+    try:
+        os.makedirs(os.path.dirname(RATE_LIMIT_FILE), exist_ok=True)
+        with open(RATE_LIMIT_FILE, 'w') as f:
+            f.write(str(time.time()))
+    except:
+        pass
+
 def call_gemini_api(prompt):
-    """Chiama Gemini 2.0 Flash via API REST"""
+    """Chiama Gemini 1.5 Flash via API REST con rate limiting"""
+    
+    # Applica rate limiting prima della chiamata
+    enforce_rate_limit()
+    
     headers = {
         'Content-Type': 'application/json',
         'X-goog-api-key': GEMINI_API_KEY
@@ -134,10 +166,15 @@ def extract_command_from_letter(response, ui_prompt):
     letter = response_clean.upper()
     if len(letter) == 1 and letter.isalpha():
         # Estrai il comando dal prompt usando la lettera
-        pattern = rf'{letter}\.\s*(CLICK:[^(\n]+|FILL:[^(\n]+)'
+        # Pattern più ampio per includere BACK e altri comandi
+        pattern = rf'{letter}\.\s*(BACK|CLICK:[^(\n]+|FILL:[^(\n]+|FILL_CUSTOM:[^(\n]+)'
         match = re.search(pattern, ui_prompt)
         if match:
-            return match.group(1).strip()
+            command = match.group(1).strip()
+            # Se è FILL_CUSTOM, restituisci il formato corretto
+            if command.startswith('FILL_CUSTOM:'):
+                return command.replace('FILL_CUSTOM:', 'FILL:')
+            return command
     
     return None
 
@@ -276,7 +313,15 @@ def main():
         return
     
     # Processa ed esegui comando
-    if command_line.startswith("CLICK:"):
+    if command_line == "BACK":
+        # Comando BACK - pressione tasto back Android
+        command = "adb shell input keyevent KEYCODE_BACK"
+        action_performed = "BACK"
+        
+        print(f"\n⬅️ Azione: Premere tasto BACK")
+        print(f"🔧 Comando: {command}")
+        
+    elif command_line.startswith("CLICK:"):
         target = command_line[6:].strip()
         target = re.sub(r'\s*\([^)]*\)', '', target)
         target = target.rstrip('.,!?;').strip()
