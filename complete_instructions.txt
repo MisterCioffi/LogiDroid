@@ -30,7 +30,6 @@ Ti verrà mostrata una lista di comandi disponibili con lettere (A, B, C, etc.)
 - Per bottoni: scrivi SOLO la lettera (A, B, C...)
 - Per testo personalizzato: scrivi Lettera:TuoTesto
 
-
 ❌ ESEMPI SBAGLIATI:
 - Non scrivere "Scelgo A" o spiegazioni
 - Non scrivere solo "L" per i campi FILL_CUSTOM

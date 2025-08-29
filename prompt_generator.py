@@ -19,32 +19,6 @@ def load_action_history(history_file: str = "test/prompts/action_history.json") 
         pass
     return []
 
-def get_screen_context(data: dict) -> str:
-    """Determina il contesto della schermata corrente"""
-    text_fields = []
-    buttons = []
-    
-    for elem in data['elements']:
-        if elem['editable']:
-            label = elem.get('label', elem.get('text', 'Campo'))
-            text_fields.append(label)
-        elif elem['clickable']:
-            button_text = elem.get('text', '').strip()
-            if button_text:
-                buttons.append(button_text)
-    
-    context = ""
-    if "Nome" in text_fields or "Cognome" in text_fields:
-        context = "Schermata di creazione contatto"
-    elif "Cerca" in buttons or "cerca" in str(buttons).lower():
-        context = "Schermata di ricerca"
-    elif any("salva" in btn.lower() for btn in buttons):
-        context = "Schermata di conferma/salvataggio"
-    else:
-        context = f"Schermata con {len(buttons)} bottoni disponibili"
-    
-    return context
-
 def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> str:
     """Genera un prompt semplice che mostra gli elementi disponibili 
         suddividendo in bottoni e campi di testo"""
@@ -57,14 +31,13 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
     
     # Carica la cronologia delle azioni precedenti
     history = load_action_history()
-    screen_context = get_screen_context(data)
     
     # Separa bottoni e campi di testo
     buttons = []
     text_fields = []
     
     for elem in data['elements']:
-        if elem['editable']:  # Campo di testo VERO
+        if elem['editable']:  # Campo di testo editabile
             label = elem.get('label', elem.get('text', elem.get('content_desc', 'Campo')))
             current_value = elem.get('text', '').strip()
             
@@ -88,7 +61,7 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
                         button_text = "[bottone]"
             buttons.append(button_text)
     
-    # SEMPRE carica le istruzioni complete (essenziale per LLM stateless)
+    # SEMPRE carica le istruzioni complete 
     with open('complete_instructions.txt', 'r', encoding='utf-8') as f:
         prompt = f.read() + "\n\n"
     
@@ -118,10 +91,10 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
     
     prompt += "📱 COMANDI DISPONIBILI - SCEGLI UNO:\n\n"
 
-    command_options = []
+    command_options = [] # Lista dei comandi disponibili
     option_letter = 'A'
     
-    # SEMPRE aggiungere comando BACK come prima opzione
+    # Aggiunta del tasto BACK tra le opzioni
     command_options.append("BACK")
     prompt += f"{option_letter}. BACK (torna alla schermata precedente)\n"
     option_letter = chr(ord(option_letter) + 1)
@@ -156,20 +129,7 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
         for field in text_fields[:5]:  # Max 5 campi
             clean_field = field.split(' (')[0]  # Rimuovi (VUOTO)/(COMPILATO)
             
-            # Genera alcuni valori di esempio appropriati
-            example_values = []
-            if "nome" in clean_field.lower():
-                example_values = ["Marco", "Luca"]
-            elif "email" in clean_field.lower():
-                example_values = ["test@email.com"]
-            elif "telefono" in clean_field.lower() or "tel" in clean_field.lower():
-                example_values = ["3331234567"]
-            elif "testo" in clean_field.lower() or "nota" in clean_field.lower():
-                example_values = ["Test automatico"]
-            else:
-                example_values = ["Test"]
-            
-            # Aggiungi solo opzione per testo personalizzato (rimossi esempi fissi)
+            # Aggiungi solo opzione per testo personalizzato 
             if option_letter <= 'Z':
                 command = f"FILL_CUSTOM:{clean_field}"
                 command_options.append(command)
