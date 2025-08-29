@@ -121,26 +121,6 @@ def call_gemini_api(prompt):
         print(f"❌ Errore parsing risposta Gemini: {e}")
         return None
 
-def is_obvious_loop(action, history):
-    """Rileva loop evidenti e azioni già fallite"""
-    if not history:
-        return False
-    
-    # 1. Loop tradizionale: stessa azione 3+ volte consecutive
-    if len(history) >= 3:
-        last_3_actions = [h.get('action', '') for h in history[-3:]]
-        if all(a == action for a in last_3_actions):
-            return True
-    
-    # 2. NUOVO: Evita azioni che sono già fallite recentemente
-    recent_history = history[-5:]  # Ultimi 5 tentativi
-    for entry in recent_history:
-        if entry.get('action', '') == action and not entry.get('success', True):
-            print(f"🚫 Azione già fallita recentemente: {action}")
-            return True
-    
-    return False
-
 def extract_command_from_letter(response, ui_prompt):
     """Estrae comando dalla risposta dell'LLM (lettera o lettera:testo)"""
     response_clean = response.strip()
@@ -305,12 +285,6 @@ def main():
         return
     
     print(f"🎯 Comando estratto: {command_line}")
-    
-    # Controllo anti-loop
-    if is_obvious_loop(command_line, history):
-        print(f"🔄 Loop rilevato: {command_line}")
-        print("⏭️ Saltando iterazione per evitare loop...")
-        return
     
     # Processa ed esegui comando
     if command_line == "BACK":
