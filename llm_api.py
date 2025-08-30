@@ -75,7 +75,7 @@ def enforce_rate_limit():
         pass
 
 def call_gemini_api(prompt):
-    """Chiama Gemini 1.5 Flash via API REST con rate limiting"""
+    """Chiama Gemini 2.0 Flash via API REST con rate limiting"""
     
     # Applica rate limiting prima della chiamata
     enforce_rate_limit()
@@ -85,6 +85,7 @@ def call_gemini_api(prompt):
         'X-goog-api-key': GEMINI_API_KEY
     }
     
+    # ✨ Payload ottimizzato per Gemini 2.0
     payload = {
         "contents": [
             {
@@ -97,9 +98,29 @@ def call_gemini_api(prompt):
         ],
         "generationConfig": {
             "maxOutputTokens": CONFIG.get("max_output_tokens", 50),
-            "temperature": CONFIG.get("temperature", 0.7),
-            "topP": CONFIG.get("top_p", 0.9)
-        }
+            "temperature": CONFIG.get("temperature", 1.0),
+            "topP": CONFIG.get("top_p", 0.9),
+            "topK": CONFIG.get("top_k", 40),  # Parametro aggiuntivo per Gemini 2.0
+            "stopSequences": []  # Può essere usato per controllo più preciso
+        },
+        "safetySettings": [
+            {
+                "category": "HARM_CATEGORY_HARASSMENT",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_HATE_SPEECH", 
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                "threshold": "BLOCK_NONE"
+            }
+        ]
     }
     
     try:

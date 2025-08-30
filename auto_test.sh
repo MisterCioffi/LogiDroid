@@ -57,8 +57,8 @@ init_activity_coverage() {
     print_success "Package rilevato: $package"
     echo "$package" > "$COVERAGE_DIR/current_package.txt"
     
-    # Estrai AndroidManifest.xml
-    print_info "📱 Estraendo AndroidManifest.xml..."
+    # Estrai APK per riferimento
+    print_info "📱 Scaricando APK da device..."
     local apk_path=$(adb shell pm path "$package" | head -1 | cut -d':' -f2)
     
     if [ -z "$apk_path" ]; then
@@ -66,11 +66,11 @@ init_activity_coverage() {
         exit 1
     fi
     
-    # Estrai APK e manifest
+    # Estrai APK
     adb pull "$apk_path" "$COVERAGE_DIR/app.apk" >/dev/null 2>&1
     
-    # Estrai tutte le activity usando dumpsys package (più affidabile)
-    print_info "📋 Estraendo lista activity..."
+    # Estrai tutte le activity usando dumpsys package (metodo più affidabile del manifest)
+    print_info "📋 Estraendo lista activity da Android system..."
     adb shell dumpsys package "$package" | grep -A 1000 "Activity Resolver Table:" | grep -B 1000 "Receiver Resolver Table:" | grep -oE "$package/[a-zA-Z0-9_.$]*" | sort | uniq > "$ALL_ACTIVITIES_FILE" 2>/dev/null
     
     # Se non trova activity, prova metodo alternativo
