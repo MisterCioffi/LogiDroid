@@ -229,13 +229,27 @@ automate_from_json() {
 import json, sys
 with open('$json_file') as f:
     data = json.load(f)
+
+# Normalizza target ricevuto (rimuovi eventuali parentesi quadre e spazi, case-insensitive)
+target = '$target'
+target = target.strip()
+if target.startswith('[') and target.endswith(']'):
+    target = target[1:-1]
+target_norm = target.lower()
+
 for elem in data['elements']:
-    if not elem['editable']:
-        text = elem.get('text', '')
-        content_desc = elem.get('content_desc', '')
-        resource_id = elem.get('resource_id', '')
-        if ('$target' in text or '$target' in content_desc or '$target' in resource_id):
-            print(f\"{elem['bounds']['x']} {elem['bounds']['y']}\")
+    if not elem.get('editable', False):
+        text = (elem.get('text') or '').lower()
+        content_desc = (elem.get('content_desc') or '').lower()
+        resource_id = (elem.get('resource_id') or '').lower()
+        resource_last = resource_id.split(':')[-1] if resource_id else ''
+
+        # Confronti: testo, content_desc, resource_id completo o solo l'ultima parte
+        if (target_norm in text) or (target_norm in content_desc) or (target_norm in resource_id) or (target_norm in resource_last) or (resource_last and resource_last in target_norm):
+            bounds = elem.get('bounds', {})
+            x = bounds.get('x', 0)
+            y = bounds.get('y', 0)
+            print(f\"{x} {y}\")
             break
 ")
             if [ -n "$coords" ]; then
@@ -344,8 +358,11 @@ with open('$json_file') as f:
 for elem in data['elements']:
     if elem['clickable'] and not elem.get('editable', False):
         # Controlla text, content_desc, o label
-        button_text = elem.get('text', '') or elem.get('content_desc', '') or elem.get('label', '')
-        if '$target' in button_text:
+    button_text = (elem.get('text') or '') or (elem.get('content_desc') or '') or (elem.get('label') or '')
+    bt = button_text.lower()
+    tgt = '$target'.lower()
+    resource_last = (elem.get('resource_id') or '').split(':')[-1].lower()
+    if (tgt in bt) or (tgt in resource_last) or (resource_last in tgt):
             bounds = elem.get('bounds', {})
             width = bounds.get('width', 0)
             height = bounds.get('height', 0)
