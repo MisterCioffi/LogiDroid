@@ -11,9 +11,8 @@ OBIETTIVO
 • Compila i campi testuali solo una volta e con valori sensati.
 • Se vedi un bottone “Salva”, compila almeno un campo prima.
 • Nelle liste, prova ad aprire elementi.
-• Se sei bloccato, torna alla schermata iniziale.
+• Se sei bloccato, torna alla schermata iniziale attraverso il tasto BACK.
 • Se apri Impostazioni, esplora tutti i tasti ed evita di tornare subito indietro.
-• Usa il tasto BACK solo se ritieni di esserti bloccato, altrimenti continua nella tua esplorazione.
 
 ❌ COMPORTAMENTI DA EVITARE:
 • Non ripetere la stessa azione consecutivamente.

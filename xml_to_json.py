@@ -31,12 +31,16 @@ def parse_bounds(bounds_str):
     except:
         return None
 
-def extract_elements(node, elements=[], text_nodes=[]):
-    """Estrae tutti gli elementi interessanti dall'XML"""
+def extract_elements(node, elements, text_nodes):
+    """Estrae elementi utili dal nodo XML"""
     attrs = node.attrib
-
-    # Informazioni base
-    bounds = parse_bounds(attrs.get('bounds', '')) # viene chiamata per ottenere le coordinate
+    bounds = parse_bounds(attrs.get('bounds', ''))
+    
+    if not bounds:  # Ignora nodi senza posizione
+        for child in node:
+            extract_elements(child, elements, text_nodes)
+        return
+    
     text = attrs.get('text', '').strip() #testo del nodo
     resource_id = attrs.get('resource-id', '').strip() #identificatore univoco del nodo
     hint = attrs.get('hint', '').strip() # suggerimento per il campo di testo
@@ -52,18 +56,39 @@ def extract_elements(node, elements=[], text_nodes=[]):
     is_edittext = 'edittext' in class_name
     is_textview = 'textview' in class_name and text and not clickable
     
+    # ✨ NUOVO: Se è un pulsante clickable senza testo, cerca testo nei figli
+    if is_button and clickable and not text:
+        child_text = find_text_in_children(node)
+        if child_text:
+            text = child_text
+    
     # Raccogli elementi utili
     if is_button or is_edittext:
-        elements.append({
-            'type': 'button' if is_button else 'edit_text',
-            'text': text,
-            'hint': hint,
-            'content_desc': content_desc,
-            'resource_id': resource_id,
-            'bounds': bounds,
-            'clickable': clickable,
-            'editable': is_edittext
-        })
+        # ✨ FILTRO INTELLIGENTE MIGLIORATO: Distingui tab navigation da menu dropdown
+        should_filter = False
+        
+        if is_button and not resource_id and (not text or len(text.strip()) < 2):
+            should_filter = True
+            filter_reason = "senza ID e senza testo"
+        elif is_button and not resource_id and text and content_desc == text:
+            # Tab navigation: content-desc uguale al testo (es. content-desc="Playlist", text="Playlist")
+            should_filter = True  
+            filter_reason = f"tab navigation '{text}'"
+        
+        if should_filter:
+            print(f"🚫 FILTRATO elemento decorativo {filter_reason}: {text or 'NO_TEXT'}", file=sys.stderr)
+        else:
+            # Elementi validi: con resource_id, campi di testo, menu dropdown, o pulsanti con testo significativo
+            elements.append({
+                'type': 'button' if is_button else 'edit_text',
+                'text': text,
+                'hint': hint,
+                'content_desc': content_desc,
+                'resource_id': resource_id,
+                'bounds': bounds,
+                'clickable': clickable,
+                'editable': is_edittext
+            })
     
     if is_textview and bounds:
         text_nodes.append({'text': text, 'bounds': bounds})
@@ -71,8 +96,23 @@ def extract_elements(node, elements=[], text_nodes=[]):
     # Processa figli
     for child in node:
         extract_elements(child, elements, text_nodes)
+
+def find_text_in_children(node, max_depth=3):
+    """Cerca ricorsivamente il primo testo significativo nei nodi figli"""
+    if max_depth <= 0:
+        return None
+        
+    for child in node:
+        child_text = child.attrib.get('text', '').strip()
+        if child_text and len(child_text) >= 2:
+            return child_text
+        
+        # Ricerca ricorsiva nei nipoti
+        grandchild_text = find_text_in_children(child, max_depth - 1)
+        if grandchild_text:
+            return grandchild_text
     
-    return elements, text_nodes
+    return None
 
 def find_label_for_edittext(edittext, text_nodes):
     """Trova l'etichetta più vicina per un campo EditText"""

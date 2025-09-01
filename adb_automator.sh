@@ -343,6 +343,20 @@ for elem in data['elements']:
                 adb shell input text "$value"
                 sleep 0.5
                 
+                # ✨ NUOVO: Se è un campo di ricerca, premi ENTER automaticamente
+                if [[ "$target" =~ [Rr]icerc|[Ss]earch|[Ff]ind|[Cc]erc ]]; then
+                    print_info "Campo di ricerca rilevato - premendo ENTER automaticamente..."
+                    adb shell input keyevent KEYCODE_ENTER
+                    sleep 1
+                else
+                    # ✨ NUOVO: Per campi normali, nascondi la tastiera come fa un umano
+                    print_info "Campo normale compilato - nascondendo tastiera..."
+                    adb shell input keyevent KEYCODE_ENTER  # Prova prima ENTER (Done)
+                    sleep 0.3
+                    adb shell input keyevent KEYCODE_BACK   # Se non funziona, usa BACK
+                    sleep 0.5
+                fi
+                
                 print_success "Testo inserito"
             else
                 print_warning "Campo editabile '$target' non trovato o troppo piccolo"
@@ -490,6 +504,20 @@ for elem in data['elements']:
                         # Inserisci il nuovo testo
                         adb shell input text "$value"
                         sleep 0.5
+                        
+                        # ✨ NUOVO: Se è un campo di ricerca, premi ENTER automaticamente
+                        if [[ "$target" =~ [Rr]icerc|[Ss]earch|[Ff]ind|[Cc]erc ]]; then
+                            print_info "Campo di ricerca rilevato - premendo ENTER automaticamente..."
+                            adb shell input keyevent KEYCODE_ENTER
+                            sleep 1
+                        else
+                            # ✨ NUOVO: Per campi normali, nascondi la tastiera come fa un umano
+                            print_info "Campo normale compilato - nascondendo tastiera..."
+                            adb shell input keyevent KEYCODE_ENTER  # Prova prima ENTER (Done)
+                            sleep 0.3
+                            adb shell input keyevent KEYCODE_BACK   # Se non funziona, usa BACK
+                            sleep 0.5
+                        fi
                         
                         print_success "Campo '$target' compilato con successo!"
                     else

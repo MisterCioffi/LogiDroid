@@ -297,11 +297,21 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
         if elem['editable']:  # Campo di testo editabile
             label = elem.get('label', elem.get('text', elem.get('content_desc', 'Campo')))
             current_value = elem.get('text', '').strip()
+            resource_id = elem.get('resource_id', '').lower()
+            
+            # Determina il tipo di campo
+            is_search = any(keyword in (label.lower() + resource_id) for keyword in ['search', 'ricerca', 'cerca', 'find'])
             
             if current_value:
-                field_id = f"{label} (COMPILATO)"
+                if is_search:
+                    field_id = f"{label} (RICERCA COMPILATA: '{current_value[:20]}...' - USA ALTRO CAMPO)"
+                else:
+                    field_id = f"{label} (COMPILATO: '{current_value[:20]}...' - EVITA SE POSSIBILE)"
             else:
-                field_id = f"{label} (VUOTO)"
+                if is_search:
+                    field_id = f"{label} (RICERCA VUOTA - PREMI ENTER AUTOMATICO DOPO SCRITTURA)"
+                else:
+                    field_id = f"{label} (VUOTO)"
             
             text_fields.append(field_id)
         elif elem['clickable']:  # Bottoni clickable
