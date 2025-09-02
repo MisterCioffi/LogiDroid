@@ -67,9 +67,10 @@ def extract_elements(node, elements, text_nodes):
         # ✨ FILTRO INTELLIGENTE MIGLIORATO: Distingui tab navigation da menu dropdown
         should_filter = False
         
-        if is_button and not resource_id and (not text or len(text.strip()) < 2):
+        # ✨ FILTRO MIGLIORATO: Non filtrare se ha content_desc valido
+        if is_button and not resource_id and (not text or len(text.strip()) < 2) and (not content_desc or len(content_desc.strip()) < 2):
             should_filter = True
-            filter_reason = "senza ID e senza testo"
+            filter_reason = "senza ID, senza testo e senza content_desc"
         elif is_button and not resource_id and text and content_desc == text:
             # Tab navigation: content-desc uguale al testo (es. content-desc="Playlist", text="Playlist")
             should_filter = True  

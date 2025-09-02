@@ -334,13 +334,13 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
             button_text = elem.get('text', '').strip()
             if not button_text:
                 content_desc = elem.get('content_desc', '').strip()
+                resource_id = elem.get('resource_id', '')
                 if content_desc:
-                    button_text = content_desc
-                    resource_id = elem.get('resource_id', '')
-                    if resource_id:
-                        button_text = f"[{resource_id.split(':')[-1]}]"
-                    else:
-                        button_text = "[bottone]"
+                    button_text = content_desc  # Usa content_desc se disponibile
+                elif resource_id:
+                    button_text = f"[{resource_id.split(':')[-1]}]"
+                else:
+                    button_text = "[bottone]"
             buttons.append(button_text)
     
     # SEMPRE carica le istruzioni complete 
