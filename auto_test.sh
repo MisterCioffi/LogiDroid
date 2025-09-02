@@ -107,10 +107,30 @@ update_activity_coverage() {
     fi
     
     if [ ! -z "$current_activity" ]; then
-        # Controlla se è una nuova activity
-        if ! grep -q "^$current_activity$" "$EXPLORED_ACTIVITIES_FILE" 2>/dev/null; then
-            echo "$current_activity" >> "$EXPLORED_ACTIVITIES_FILE"
-            print_success "🆕 Nuova activity: $current_activity"
+        # ✅ FILTRO: Verifica se l'activity appartiene al package dell'app target
+        local package_name=$(cat "$COVERAGE_DIR/current_package.txt" 2>/dev/null)
+        
+        # Debug: mostra i valori per capire il matching
+        echo "🔍 DEBUG Activity: '$current_activity'" >&2
+        echo "🔍 DEBUG Package:  '$package_name'" >&2
+        
+        # ✨ FILTRO SPECIFICO LAUNCHER: Blocca sempre le activity del launcher
+        if [[ "$current_activity" == *"launcher"* ]] || [[ "$current_activity" == *"Launcher"* ]]; then
+            echo "🚫 Activity LAUNCHER bloccata: $current_activity" >&2
+        elif [[ "$current_activity" == "$package_name"* ]]; then
+            echo "✅ Activity appartiene all'app target" >&2
+            # Activity appartiene all'app target - controlla se è nuova
+            if ! grep -q "^$current_activity$" "$EXPLORED_ACTIVITIES_FILE" 2>/dev/null; then
+                echo "$current_activity" >> "$EXPLORED_ACTIVITIES_FILE"
+                print_success "🆕 Nuova activity: $current_activity"
+            else
+                echo "ℹ️ Activity già presente: $current_activity" >&2
+            fi
+        else
+            # Activity NON appartiene all'app target - ignora
+            echo "❌ Activity esterna IGNORATA: $current_activity" >&2
+            echo "   Package activity: '${current_activity%%/*}'" >&2
+            echo "   Package target:   '$package_name'" >&2
         fi
         
         # Calcola e mostra coverage

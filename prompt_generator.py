@@ -196,6 +196,22 @@ def load_visited_activities(file_path: str = "test/coverage/explored_activities.
 def save_current_activity(activity: str, file_path: str = "test/coverage/explored_activities.txt"):
     """Salva l'Activity corrente nella lista delle visitate (se non già presente)"""
     try:
+        # ✨ FILTRO PACKAGE: Carica il package target
+        package_name = ""
+        try:
+            with open("test/coverage/current_package.txt", 'r') as f:
+                package_name = f.read().strip()
+        except Exception:
+            pass
+        
+        # ✨ FILTRO 1: Non salvare se non appartiene al package target
+        if package_name and not activity.startswith(package_name):
+            return False
+            
+        # ✨ FILTRO 2: Non salvare activity del launcher
+        if "launcher" in activity.lower():
+            return False
+        
         visited = load_visited_activities(file_path)
         
         # ✨ MIGLIORAMENTO: Non salvare Unknown/UnknownActivity duplicati
@@ -320,7 +336,6 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
                 content_desc = elem.get('content_desc', '').strip()
                 if content_desc:
                     button_text = content_desc
-                else:
                     resource_id = elem.get('resource_id', '')
                     if resource_id:
                         button_text = f"[{resource_id.split(':')[-1]}]"
@@ -350,6 +365,18 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
             prompt += "🟩 COVERAGE ALTA - Esplorazione quasi completa!\n"
     else:
         prompt += f"⚠️ Coverage Status: {status}\n"
+    
+    # ✨ AGGIUNGI LISTA ACTIVITY ESPLORATE
+    visited_activities = load_visited_activities()
+    if visited_activities:
+        prompt += "\n🏃‍♂️ ACTIVITY GIÀ ESPLORATE:\n"
+        for activity in visited_activities:
+            # Mostra solo il nome della classe per brevità
+            activity_name = activity.split('/')[-1] if '/' in activity else activity
+            prompt += f"✅ {activity_name}\n"
+        prompt += "🎯 OBIETTIVO: Esplora nuove sezioni non ancora visitate!\n"
+    else:
+        prompt += "\n🆕 PRIMA ESPLORAZIONE - Nessuna activity ancora visitata\n"
     
     prompt += "\n"
     
