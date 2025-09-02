@@ -30,21 +30,27 @@ def get_current_activity():
             capture_output=True, text=True, timeout=10
         )
         
-        # Cerca il pattern dell'Activity corrente
+        # Cerca il pattern dell'Activity corrente (salta launcher)
         for line in result.stdout.split('\n'):
             if 'mCurrentFocus' in line or 'mFocusedActivity' in line:
                 # Estrae il nome dell'Activity dal pattern
                 # Esempio: mCurrentFocus=Window{abc123 u0 com.example.app/com.example.MainActivity}
                 match = re.search(r'([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.]+Activity)', line)
                 if match:
-                    return f"{match.group(1)}/{match.group(2)}"
+                    activity = f"{match.group(1)}/{match.group(2)}"
+                    # ✨ FILTRO: Salta activity del launcher
+                    if "launcher" not in activity.lower():
+                        return activity
         
-        # Metodo 2: Lista attività correnti
+        # Metodo 2: Lista attività correnti (salta launcher)
         for line in result.stdout.split('\n'):
             if 'TaskRecord' in line and 'A=' in line:
                 match = re.search(r'A=([a-zA-Z0-9_.]+/[a-zA-Z0-9_.]+Activity)', line)
                 if match:
-                    return match.group(1)
+                    activity = match.group(1)
+                    # ✨ FILTRO: Salta activity del launcher
+                    if "launcher" not in activity.lower():
+                        return activity
         
         # Metodo 3: Top Activity
         result2 = subprocess.run(
@@ -56,7 +62,10 @@ def get_current_activity():
             if 'ACTIVITY' in line and '/' in line:
                 match = re.search(r'([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.]+)', line)
                 if match:
-                    return f"{match.group(1)}/{match.group(2)}"
+                    activity = f"{match.group(1)}/{match.group(2)}"
+                    # ✨ FILTRO: Salta activity del launcher
+                    if "launcher" not in activity.lower():
+                        return activity
         
         # Metodo 4: Package name + Screen fingerprint
         package_result = subprocess.run(
