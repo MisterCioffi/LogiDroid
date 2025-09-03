@@ -224,9 +224,9 @@ class RandomActionInjector:
                 "screen": f"Random action executed: {action}"
             })
             
-            # Mantieni solo le ultime 10 azioni
-            if len(history) > 10:
-                history = history[-10:]
+            # Mantieni solo le ultime 100 azioni (backup più ampio)
+            if len(history) > 100:
+                history = history[-100:]
             
             # Salva cronologia aggiornata
             with open(history_file, 'w', encoding='utf-8') as f:

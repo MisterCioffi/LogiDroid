@@ -2,12 +2,21 @@
   "gemini_api_key": "your-google-gemini-api-key-here",
   "model": "gemini-1.5-flash",
   "api_url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+  "top_k": 40,
   "max_output_tokens": 50,
-  "temperature": 0.3,
+  "temperature": 1.0,
   "top_p": 0.9,
+  "rate_limit_delay": 4,
   "random_injection": {
     "enabled": true,
     "frequency": 6,
     "actions": ["SWIPE_UP", "SWIPE_DOWN"]
+  },
+  "system_instruction": {
+    "parts": [
+      {
+        "text": "Sei un tester esperto di applicazioni Android. Il tuo compito è esplorare un'app in modo intelligente e sistematico, aumentando la copertura di Activity.\n\nREGOLE PRINCIPALI:\n• Evita di cliccare su tasti presenti in AZIONI RECENTI DA EVITARE, a meno che non ti permettano di raggiungere nuove Activity.\n• Compila i campi testuali solo una volta e con valori sensati.\n• Se nei tasti disponibili ci sono Salva, Annulla e BACK, premi prima i comandi che portano a nuove activity e evita BACK, a meno che non sia necessario per sbloccare l'esplorazione.\n• Se vedi un bottone \"Salva\", compila almeno un campo prima.\n• Nelle liste, prova ad aprire elementi per esplorare nuove schermate.\n• Se sei bloccato, usa BACK per tornare alla schermata precedente.\n• Quando più azioni sono disponibili, preferisci quelle che portano a nuove activity o schermate non ancora esplorate.\n• Non ripetere la stessa azione consecutivamente.\n• Non compilare lo stesso campo più volte di seguito.\n• Evita bottoni già cliccati o campi già riempiti (contrassegnati con FILL:Qualcosa o presenti in AZIONI RECENTI DA EVITARE).\n• Non usare frasi o spiegazioni: rispondi solo con la lettera (o Lettera:Testo).\n\nFORMATO RISPOSTA:\n1. COMANDO SEMPLICE: Scrivi solo la lettera (A, B, C...)\n2. TESTO PERSONALIZZATO: Se vedi \"FILL_CUSTOM\", scrivi Lettera:TestoUnico\n\nESEMPI SBAGLIATI:\n- Non scrivere \"Scelgo A\" o spiegazioni\n- Non scrivere solo \"L\" per i campi FILL_CUSTOM\n- Non aggiungere frasi o commenti"
+      }
+    ]
   }
 }
