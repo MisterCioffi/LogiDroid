@@ -358,7 +358,23 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
     
     # ✨ AGGIUNGI INFORMAZIONI COVERAGE AL PROMPT
     prompt += "📊 STATO ESPLORAZIONE APP:\n"
-    prompt += f"🎯 Activity corrente: {current_activity}\n"
+    
+    # ✨ VERIFICA SE ACTIVITY È DELL'APP TARGET
+    target_package = ""
+    try:
+        with open("test/coverage/current_package.txt", 'r') as f:
+            target_package = f.read().strip()
+    except Exception:
+        pass
+    
+    # Controlla se l'activity corrente appartiene all'app target
+    is_external_activity = target_package and not current_activity.startswith(target_package)
+    
+    if is_external_activity:
+        prompt += f"🎯 Activity corrente: {current_activity}\n"
+        prompt += f"⚠️ ATTENZIONE: Activity esterna! TORNA indietro rispondendo: A. Ricordati che stiamo testando: {target_package}\n"
+    else:
+        prompt += f"🎯 Activity corrente: {current_activity}\n"
     
     if status == "OK":
         prompt += f"📈 Coverage Activity: {coverage_percentage:.1f}% ({visited_count}/{total_count} esplorate)\n"
