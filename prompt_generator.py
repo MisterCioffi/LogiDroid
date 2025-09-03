@@ -352,9 +352,8 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
                     button_text = "[bottone]"
             buttons.append(button_text)
     
-    # SEMPRE carica le istruzioni complete 
-    with open('complete_instructions.txt', 'r', encoding='utf-8') as f:
-        prompt = f.read() + "\n\n"
+    # ✨ INIZIO PROMPT CON INFORMAZIONI DINAMICHE ONLY
+    prompt = ""
     
     # ✨ AGGIUNGI INFORMAZIONI COVERAGE AL PROMPT
     prompt += "📊 STATO ESPLORAZIONE APP:\n"
@@ -369,6 +368,32 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
     
     # Controlla se l'activity corrente appartiene all'app target
     is_external_activity = target_package and not current_activity.startswith(target_package)
+    
+    # ✨ FILTRO: Non considerare "esterne" le activity di sistema/popup
+    if is_external_activity:
+        # Lista di activity di sistema che sono parte del flusso normale
+        system_popups = [
+            "com.google.android.gm",  # Gmail popup di salvataggio
+            "com.google.android.gms", # Google Play Services popup
+            "com.android.internal",   # Dialog di sistema
+            "android.app.Dialog",     # Dialog generici
+            "com.android.settings",   # Settings popup
+            "com.google.android.apps", # App Google popup
+            "com.android.documentsui", # File picker
+            "com.android.contacts",   # Contatti picker
+            "com.google.android.apps.photos", # Photo picker
+            "android.permission",     # Permission dialog
+            ".dialog",                # Qualsiasi dialog (pattern generico)
+            ".Dialog",                # Dialog con maiuscola
+            "AlertDialog",            # Alert dialog
+            "BottomSheet",            # Bottom sheet popup
+        ]
+        
+        # Se è un popup di sistema, non considerarlo "esterno"
+        is_system_popup = any(popup in current_activity for popup in system_popups)
+        if is_system_popup:
+            is_external_activity = False
+            print(f"🔧 DEBUG: Activity {current_activity} riconosciuta come popup di sistema", file=sys.stderr)
     
     if is_external_activity:
         prompt += f"🎯 Activity corrente: {current_activity}\n"

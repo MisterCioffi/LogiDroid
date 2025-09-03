@@ -123,6 +123,10 @@ def call_gemini_api(prompt):
         ]
     }
     
+    # ✨ AGGIUNGI SYSTEM INSTRUCTION SE PRESENTE NEL CONFIG
+    if "system_instruction" in CONFIG:
+        payload["systemInstruction"] = CONFIG["system_instruction"]
+    
     try:
         response = requests.post(GEMINI_URL, headers=headers, json=payload, timeout=30)
         response.raise_for_status()
