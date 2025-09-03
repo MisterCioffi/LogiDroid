@@ -31,6 +31,24 @@ def parse_bounds(bounds_str):
     except:
         return None
 
+def has_nearby_edittext(elements, target_bounds, min_distance=100):
+    """Controlla se c'è un altro EditText nelle vicinanze di target_bounds"""
+    if not target_bounds:
+        return False
+    
+    target_center_y = target_bounds['y'] + target_bounds['height'] // 2
+    
+    for elem in elements:
+        if elem.get('editable') and elem.get('bounds'):
+            elem_bounds = elem['bounds']
+            elem_center_y = elem_bounds['y'] + elem_bounds['height'] // 2
+            
+            # Se c'è un EditText più grande nella stessa area verticale
+            if (abs(target_center_y - elem_center_y) < min_distance and 
+                elem_bounds['width'] > target_bounds['width'] * 5):  # Almeno 5 volte più grande
+                return True
+    return False
+
 def extract_elements(node, elements, text_nodes):
     """Estrae elementi utili dal nodo XML"""
     attrs = node.attrib
@@ -49,12 +67,12 @@ def extract_elements(node, elements, text_nodes):
 
     # Normalizziamo il class_name per classificare il nodo in:
     # - pulsante (button)
-    # - campo di testo (edittext)
+    # - campo di testo (edittext/autocomplete/textinput)
     # - etichetta (textview)
     class_name = attrs.get('class', '').lower()
-    is_button = ('button' in class_name or clickable) and 'edittext' not in class_name
-    is_edittext = 'edittext' in class_name
-    is_textview = 'textview' in class_name and text and not clickable
+    is_button = ('button' in class_name or clickable) and not any(field_type in class_name for field_type in ['edittext', 'autocomplete', 'textinput'])
+    is_edittext = any(field_type in class_name for field_type in ['edittext', 'autocomplete', 'textinput'])
+    is_textview = 'textview' in class_name and text and not clickable and not is_edittext
     
     # ✨ NUOVO: Se è un pulsante clickable senza testo, cerca testo nei figli
     if is_button and clickable and not text:
@@ -177,10 +195,96 @@ def xml_to_json(xml_file):
         for child in root:
             extract_elements(child, elements, text_nodes)
         
+        # ✨ FILTRO POST-PROCESSING: Gestione intelligente e universale dei duplicati
+        # Fase 1: Analisi preliminare - identifica i pattern
+        large_edittexts = {}  # label -> lista di EditText grandi
+        small_edittexts = {}  # label -> lista di EditText piccoli  
+        clickable_buttons = {}  # label -> lista di bottoni clickable
+        
+        for i, element in enumerate(elements):
+            if element.get('bounds'):
+                width = element['bounds']['width']
+                height = element['bounds']['height']
+                
+                if element.get('editable'):
+                    # Calcola label temporaneo
+                    temp_label = find_label_for_edittext(element, text_nodes)
+                    
+                    if width > 100 and height > 50:  # EditText "grandi" (veri campi)
+                        if temp_label not in large_edittexts:
+                            large_edittexts[temp_label] = []
+                        large_edittexts[temp_label].append((i, element))
+                    elif width <= 10 and height <= 10:  # EditText "piccoli" (helper o campi dinamici)
+                        if temp_label not in small_edittexts:
+                            small_edittexts[temp_label] = []
+                        small_edittexts[temp_label].append((i, element))
+                
+                elif element.get('clickable') and element.get('text'):
+                    # Bottoni clickable
+                    button_label = element['text']
+                    if button_label not in clickable_buttons:
+                        clickable_buttons[button_label] = []
+                    clickable_buttons[button_label].append((i, element))
+        
+        # Fase 2: Identifica campi che sono bottoni di selezione (non input di testo)
+        selection_field_keywords = ['gruppo', 'gruppi', 'categoria', 'categorie', 'tipo', 'selezione', 
+                                   'scelta', 'opzione', 'lista', 'menu', 'preferenze', 'impostazioni',
+                                   'annulla', 'salva', 'ok', 'conferma', 'chiudi', 'indietro']
+        
+        # Fase 3: Applica logica di filtro universale
+        indices_to_remove = set()
+        
+        # Regola 1: Se esiste EditText grande + EditText piccolo con stesso label → rimuovi piccolo (è helper)
+        for label in large_edittexts:
+            if label in small_edittexts:
+                print(f"🔍 Trovato EditText grande + piccolo per '{label}' - rimuovo helper piccolo", file=sys.stderr)
+                for idx, elem in small_edittexts[label]:
+                    bounds = elem['bounds']
+                    indices_to_remove.add(idx)
+                    print(f"🚫 FILTRATO EditText helper '{label}' ({bounds['width']}x{bounds['height']}px) - {elem.get('resource_id', 'NO_ID')}", file=sys.stderr)
+        
+        # Regola 2: Per campi di selezione, mantieni solo il bottone clickable
+        for label in small_edittexts:
+            label_lower = label.lower()
+            is_selection_field = any(keyword in label_lower for keyword in selection_field_keywords)
+            
+            if is_selection_field and label in clickable_buttons:
+                print(f"🔍 '{label}' è un campo di selezione - rimuovo EditText, mantengo bottone", file=sys.stderr)
+                for idx, elem in small_edittexts[label]:
+                    bounds = elem['bounds']
+                    indices_to_remove.add(idx)
+                    print(f"🚫 FILTRATO EditText di selezione '{label}' ({bounds['width']}x{bounds['height']}px) - {elem.get('resource_id', 'NO_ID')}", file=sys.stderr)
+        
+        # Regola 3: Per campi di input normali, rimuovi bottoni duplicati se c'è EditText piccolo
+        for label in small_edittexts:
+            label_lower = label.lower()
+            is_selection_field = any(keyword in label_lower for keyword in selection_field_keywords)
+            
+            if not is_selection_field and label in clickable_buttons and label not in large_edittexts:
+                print(f"🔍 '{label}' è un campo di input - rimuovo bottoni duplicati, mantengo EditText", file=sys.stderr)
+                for idx, elem in clickable_buttons[label]:
+                    bounds = elem['bounds']
+                    indices_to_remove.add(idx)
+                    print(f"🚫 FILTRATO Button duplicato '{label}' ({bounds['width']}x{bounds['height']}px) - {elem.get('resource_id', 'NO_ID')}", file=sys.stderr)
+        
+        # Rimuovi gli elementi identificati come duplicati
+        filtered_elements = [elem for i, elem in enumerate(elements) if i not in indices_to_remove]
+        elements = filtered_elements
+        
         # Aggiungi etichette automatiche
         for element in elements:
             if element['editable']:
-                element['label'] = find_label_for_edittext(element, text_nodes)
+                # ✨ MIGLIORAMENTO: Se l'EditText ha un testo significativo che non è un placeholder, usalo come label
+                element_text = element.get('text', '').strip()
+                calculated_label = find_label_for_edittext(element, text_nodes)
+                
+                # Se il testo è significativo e diverso dal label calcolato, preferisci il testo
+                if (element_text and len(element_text) > 1 and 
+                    element_text != calculated_label and
+                    not any(placeholder in element_text for placeholder in ['hint', 'placeholder', 'enter'])):
+                    element['label'] = element_text
+                else:
+                    element['label'] = calculated_label
             else:
                 element['text'] = find_label_for_button(element, text_nodes)
                 element['label'] = element['text']

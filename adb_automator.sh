@@ -263,47 +263,75 @@ for elem in data['elements']:
             ;;
             
         "fill_field")
-            # Cerca campo per label, priorità ai campi vuoti
+            # Cerca campo per label con mapping robusto basato su resource_id
             local coords=$(python3 -c "
 import json, sys
 with open('$json_file') as f:
     data = json.load(f)
 
-# Prima cerca il campo corretto per Nome: deve avere il resource_id specifico
+# MAPPING SPECIFICO PER CAMPI CONOSCIUTI
+field_mapping = {
+    'Nome': ['nameEdit', 'title'],  # Samsung Contacts + Calendar
+    'Cognome': ['familyNameEdit'],  # Samsung Contacts
+    'Telefono': ['phoneEdit'],      # Samsung Contacts
+    'E-mail': ['emailEdit'],        # Samsung Contacts
+    'Note': ['note_text'],          # Samsung Calendar
+    'Luogo': ['location'],          # Samsung Calendar
+    'Invitato': ['attendees'],      # Samsung Calendar
+    'TuoTesto': ['title', 'location', 'note_text', 'attendees']  # Fallback per campi già compilati
+}
+
+target_field = '$target'
+
+# STEP 1: Prova mapping specifico per resource_id
+if target_field in field_mapping:
+    for elem in data['elements']:
+        if elem.get('editable', False):
+            resource_id = elem.get('resource_id', '')
+            for pattern in field_mapping[target_field]:
+                if pattern in resource_id:
+                    bounds = elem.get('bounds', {})
+                    width = bounds.get('width', 0)
+                    height = bounds.get('height', 0)
+                    if width > 50 and height > 20:
+                        # COORDINATE GIÀ CENTRALI dal JSON (non servono calcoli)
+                        center_x = bounds['x']
+                        center_y = bounds['y']
+                        print(f\"{center_x} {center_y}\")
+                        sys.exit(0)
+
+# STEP 2: Cerca per corrispondenza label esatta (per campi non ancora compilati)
 for elem in data['elements']:
-    if elem['editable'] and '$target' in elem.get('label', ''):
-        resource_id = elem.get('resource_id', '')
+    if elem.get('editable', False):
+        label = elem.get('label', '').strip()
+        if label == target_field:
+            bounds = elem.get('bounds', {})
+            width = bounds.get('width', 0)
+            height = bounds.get('height', 0)
+            if width > 50 and height > 20:
+                center_x = bounds['x']
+                center_y = bounds['y']
+                print(f\"{center_x} {center_y}\")
+                sys.exit(0)
+
+# STEP 3: Cerca per label contenente il target (fallback)
+for elem in data['elements']:
+    if elem.get('editable', False) and target_field in elem.get('label', ''):
         bounds = elem.get('bounds', {})
         width = bounds.get('width', 0)
         height = bounds.get('height', 0)
-        # Per il campo Nome, cerca quello con nameEdit (campo principale)
-        if '$target' == 'Nome' and 'nameEdit' in resource_id and width > 50 and height > 20:
-            center_x = bounds['x'] + width // 2
-            center_y = bounds['y'] + height // 2
+        if width > 50 and height > 20:
+            center_x = bounds['x']
+            center_y = bounds['y']
             print(f\"{center_x} {center_y}\")
             sys.exit(0)
 
-# Per altri campi o come fallback, usa la logica standard con dimensioni grandi
+# STEP 4: ULTIMA OPZIONE - qualsiasi campo editabile che contiene il target
 for elem in data['elements']:
-    if elem['editable'] and '$target' in elem.get('label', ''):
+    if elem.get('editable', False) and target_field in elem.get('label', ''):
         bounds = elem.get('bounds', {})
-        width = bounds.get('width', 0)
-        height = bounds.get('height', 0)
-        # Priorità ai campi con dimensioni significative (almeno 50x20)
-        if width > 50 and height > 20:  # Campo con dimensioni ragionevoli
-            center_x = bounds['x'] + width // 2
-            center_y = bounds['y'] + height // 2
-            print(f\"{center_x} {center_y}\")
-            sys.exit(0)
-
-# ULTIMA OPZIONE: Se non trova campi grandi, prova anche i piccoli (per E-mail, etc.)
-for elem in data['elements']:
-    if elem['editable'] and '$target' in elem.get('label', ''):
-        bounds = elem.get('bounds', {})
-        width = bounds.get('width', 0)
-        height = bounds.get('height', 0)
-        center_x = bounds['x'] + width // 2
-        center_y = bounds['y'] + height // 2
+        center_x = bounds['x']
+        center_y = bounds['y']
         print(f\"{center_x} {center_y}\")
         sys.exit(0)
 ")

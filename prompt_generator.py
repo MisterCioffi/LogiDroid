@@ -327,7 +327,11 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
             # Determina il tipo di campo
             is_search = any(keyword in (label.lower() + resource_id) for keyword in ['search', 'ricerca', 'cerca', 'find'])
             
-            if current_value:
+            # ✨ MIGLIORE RILEVAMENTO PLACEHOLDER: Se il valore è uguale al label, è probabilmente un placeholder
+            is_placeholder = current_value and (current_value.lower() == label.lower() or 
+                                              current_value in ['Nome', 'Prefisso nome', 'Secondo nome', 'Cognome', 'Suffisso nome'])
+            
+            if current_value and not is_placeholder:
                 if is_search:
                     field_id = f"{label} (RICERCA COMPILATA: '{current_value[:20]}...' - USA ALTRO CAMPO)"
                 else:
@@ -491,7 +495,7 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
     
     # Aggiungi comandi FILL per i campi di testo
     if text_fields:
-        for field in text_fields[:5]:  # Max 5 campi
+        for field in text_fields[:10]:  # Max 10 campi (aumentato da 5)
             clean_field = field.split(' (')[0]  # Rimuovi (VUOTO)/(COMPILATO)
             
             # Aggiungi solo opzione per testo personalizzato 
