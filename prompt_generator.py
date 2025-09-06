@@ -355,7 +355,7 @@ def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> 
                     button_text = "[bottone]"
             buttons.append(button_text)
     
-    # ✨ INIZIO PROMPT CON INFORMAZIONI DINAMICHE ONLY
+    # ✨ INIZIO PROMPT CON INFORMAZIONI DINAMICHE
     prompt = ""
     
     # ✨ AGGIUNGI INFORMAZIONI COVERAGE AL PROMPT
