@@ -205,3 +205,78 @@ test/
 - **Un'app alla volta** - Assicurati che solo l'app target sia aperta
 - **Supervisione consigliata** - Monitora i primi test per verificare il comportamento
 
+## Compatibilità Sistema
+
+LogiDroid è **cross-platform** e funziona su:
+- ✅ **macOS** (nativo)
+- ✅ **Linux** (Ubuntu, Debian, etc.)
+- ✅ **Windows** - tramite:
+  - **WSL** (Windows Subsystem for Linux) - Consigliato
+  - **Git Bash** (incluso con Git for Windows) - Alternativa leggera
+
+**Per Windows:**
+- 🥇 **WSL**: Ambiente Linux completo in Windows (`wsl --install` da PowerShell)
+- 🥈 **Git Bash**: Incluso con Git for Windows, più semplice da usare
+
+#### 🪟 Setup Dettagliato per Windows
+
+**Opzione 1: WSL (Consigliata)**
+```bash
+# 1. Apri PowerShell come Administrator
+# 2. Installa WSL
+wsl --install
+
+# 3. Riavvia il computer quando richiesto
+# 4. Al riavvio si aprirà Ubuntu automaticamente
+# 5. Crea username e password quando richiesto
+
+# 6. Installa Python e ADB in Ubuntu
+sudo apt update
+sudo apt install python3 python3-pip adb
+
+# 7. Clona LogiDroid in WSL
+git clone https://github.com/MisterCioffi/LogiDroid.git
+cd LogiDroid
+
+# 8. Configura ed esegui normalmente
+cp config_example.json config.json
+# Modifica config.json con le tue API key
+./auto_test.sh
+```
+
+**Opzione 2: Git Bash (Più Semplice)**
+```bash
+# 1. Scarica e installa Git for Windows da:
+#    https://git-scm.com/download/win
+
+# 2. Scarica Android SDK Platform Tools da:
+#    https://developer.android.com/studio/releases/platform-tools
+#    Estrai in C:\platform-tools\
+
+# 3. Aggiungi ADB al PATH di Windows:
+#    - Apri "Modifica variabili d'ambiente di sistema"
+#    - Variabili d'ambiente -> Path -> Modifica
+#    - Aggiungi: C:\platform-tools
+
+# 4. Installa Python 3.9+ da python.org
+
+# 5. Apri Git Bash e clona LogiDroid
+git clone https://github.com/MisterCioffi/LogiDroid.git
+cd LogiDroid
+
+# 6. Configura ed esegui
+cp config_example.json config.json
+# Modifica config.json con un editor di testo
+./auto_test.sh
+```
+
+**Verifica Setup Windows:**
+```bash
+# In WSL o Git Bash, verifica che tutto funzioni:
+python3 --version    # Dovrebbe mostrare Python 3.9+
+adb version         # Dovrebbe mostrare ADB installato
+adb devices         # Dovrebbe rilevare il tuo telefono Android
+```
+
+I script utilizzano solo comandi shell standard POSIX, garantendo massima compatibilità.
+
