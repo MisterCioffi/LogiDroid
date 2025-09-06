@@ -295,8 +295,7 @@ def save_all_activities_reference(activities: list, file_path: str = "test/cover
         print(f"⚠️ Errore nel salvataggio riferimento Activity: {e}", file=sys.stderr)
 
 def generate_simple_prompt(json_file: str, is_first_iteration: bool = False) -> str:
-    """Genera un prompt semplice che mostra gli elementi disponibili 
-        suddividendo in bottoni e campi di testo"""
+    """Genera un prompt semplice che mostra gli elementi disponibili """
     
     try:
         with open(json_file, 'r', encoding='utf-8') as f:

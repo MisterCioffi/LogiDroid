@@ -130,23 +130,6 @@ adb_clear_field() {
     print_success "Campo cancellato"
 }
 
-adb_long_click() {
-    local x=$1
-    local y=$2
-    local description=${3:-""}
-    
-    print_info "Long click su ($x, $y) ${description}"
-    adb shell input swipe $x $y $x $y 1000  # Long press
-    
-    if [ $? -eq 0 ]; then
-        print_success "Long click eseguito"
-        sleep 1
-    else
-        print_error "Errore durante long click"
-        return 1
-    fi
-}
-
 adb_scroll() {
     local direction=$1  # up, down, left, right
     local steps=${2:-3}
@@ -193,20 +176,6 @@ adb_back() {
     print_info "Premendo tasto Indietro"
     adb shell input keyevent KEYCODE_BACK
     print_success "Tasto Indietro premuto"
-    sleep 1
-}
-
-adb_home() {
-    print_info "Premendo tasto Home"
-    adb shell input keyevent KEYCODE_HOME
-    print_success "Tasto Home premuto"
-    sleep 1
-}
-
-adb_menu() {
-    print_info "Premendo tasto Menu"
-    adb shell input keyevent KEYCODE_MENU
-    print_success "Tasto Menu premuto"
     sleep 1
 }
 

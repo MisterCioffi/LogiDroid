@@ -12,7 +12,7 @@ config.json
 *.jpeg
 
 # Eccezioni per file necessari
+!\imm/
 !imm/IconaLogi.png
-!imm/Workflow.png
-!imm/Workflow2.png
+!imm/WorkflowLogiDroid.png
 !config_example.json
