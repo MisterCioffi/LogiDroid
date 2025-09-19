@@ -1,4 +1,4 @@
-# 🧠 LogiDroid - Sistema di Automazione Android con LLM
+# 🧠 LogiDroid - Sistema di testing automatico per applicazioni Android
 
 <div align="center">
   <img src="imm/IconaLogi.png" alt="LogiDroid Logo" width="300" height="300">
