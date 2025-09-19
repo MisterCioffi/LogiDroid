@@ -4,7 +4,6 @@
   <img src="imm/IconaLogi.png" alt="LogiDroid Logo" width="300" height="300">
   <br><br>
   
-  ![Version](https://img.shields.io/badge/version-3.0-blue.svg)
   ![Python](https://img.shields.io/badge/python-3.9+-brightgreen.svg)
   ![Android](https://img.shields.io/badge/platform-Android-green.svg)
   ![AI](https://img.shields.io/badge/AI-Gemini%202.0%20Flash-purple.svg)
