@@ -90,7 +90,8 @@ def get_current_activity():
     return generate_screen_fingerprint("unknown")
 
 def generate_screen_fingerprint(package_name):
-    """Genera un identificativo unico per la schermata corrente basato sui contenuti UI"""
+    """Genera un identificativo unico per la schermata corrente basato sui contenuti UI
+    nel caso nopn si riesca a rilevare l'Activity esatta."""
     try:
         # Usa l'ultimo file JSON generato per creare un fingerprint
         json_files = []
@@ -138,39 +139,114 @@ def generate_screen_fingerprint(package_name):
         return f"{package_name}/UnknownScreen"
 
 def get_all_activities_from_apk(apk_path: str = "test/coverage/app.apk"):
-    """Estrae tutte le Activity dall'APK usando aapt o mantiene lista manuale"""
+    """Estrae tutte le Activity attraverso diversi metodi"""
     try:
-        if not os.path.exists(apk_path):
-            print(f"⚠️ APK non trovato: {apk_path}", file=sys.stderr)
-            # Fallback: usa lista manuale se esistente
-            return load_manual_activities_list()
-            
-        # Prova prima con aapt
+        # METODO 1: Leggi da file all_activities.txt se esiste (generato da auto_test.sh)
+        activities_file = "test/coverage/all_activities.txt"
+        if os.path.exists(activities_file):
+            try:
+                with open(activities_file, 'r', encoding='utf-8') as f:
+                    activities = [line.strip() for line in f.readlines() if line.strip()]
+                    if activities:
+                        print(f"✅ Caricate {len(activities)} activity da {activities_file}", file=sys.stderr)
+                        return activities
+            except Exception as e:
+                print(f"⚠️ Errore lettura {activities_file}: {e}", file=sys.stderr)
+        
+        # METODO 2: Estrazione dinamica da device Android (come auto_test.sh)
+        print("🔍 Estraendo activity direttamente da device Android...", file=sys.stderr)
         try:
-            result = subprocess.run(
-                ["aapt", "dump", "badging", apk_path],
-                capture_output=True, text=True, timeout=30
-            )
+            # Ottieni package corrente
+            package_name = ""
+            try:
+                with open("test/coverage/current_package.txt", 'r') as f:
+                    package_name = f.read().strip()
+            except Exception:
+                pass
             
-            activities = []
-            for line in result.stdout.split('\n'):
-                if 'activity' in line.lower():
-                    # Estrae nomi Activity dal dump aapt
-                    match = re.search(r"name='([^']+)'", line)
-                    if match:
-                        activities.append(match.group(1))
-                        
-            if activities:
-                return list(set(activities))  # Rimuove duplicati
+            if package_name:
+                # Metodo principale: Activity Resolver Table (come auto_test.sh)
+                result = subprocess.run([
+                    "adb", "shell", "dumpsys", "package", package_name
+                ], capture_output=True, text=True, timeout=30)
                 
-        except FileNotFoundError:
-            print("⚠️ aapt non installato, usando rilevamento dinamico...", file=sys.stderr)
+                if result.returncode == 0:
+                    # Estrai da Activity Resolver Table
+                    lines = result.stdout.split('\n')
+                    in_resolver_section = False
+                    activities = []
+                    
+                    for line in lines:
+                        if "Activity Resolver Table:" in line:
+                            in_resolver_section = True
+                            continue
+                        elif "Receiver Resolver Table:" in line:
+                            in_resolver_section = False
+                            break
+                        
+                        if in_resolver_section:
+                            # Cerca pattern package/ActivityName
+                            import re
+                            matches = re.findall(rf'{package_name}/[a-zA-Z0-9_.$]*', line)
+                            activities.extend(matches)
+                    
+                    if activities:
+                        unique_activities = list(set(activities))  # Rimuovi duplicati
+                        print(f"✅ Trovate {len(unique_activities)} activity da dumpsys package", file=sys.stderr)
+                        return unique_activities
+                    
+                    # Fallback: metodo alternativo (come auto_test.sh)
+                    print("🔄 Provo metodo alternativo dumpsys...", file=sys.stderr)
+                    activities = []
+                    for line in lines:
+                        if "activity" in line.lower():
+                            matches = re.findall(rf'{package_name}[a-zA-Z0-9_./]*', line)
+                            # Filtra receiver, service, provider
+                            filtered = [m for m in matches if not any(x in m.lower() for x in ['receiver', 'service', 'provider'])]
+                            activities.extend(filtered)
+                    
+                    if activities:
+                        unique_activities = list(set(activities))
+                        print(f"✅ Trovate {len(unique_activities)} activity da metodo alternativo", file=sys.stderr)
+                        return unique_activities
+                        
+        except Exception as e:
+            print(f"⚠️ Errore estrazione dinamica: {e}", file=sys.stderr)
+        
+        # METODO 3: AAPT (se APK esiste)
+        if os.path.exists(apk_path):
+            print(f"🔍 Tentativo estrazione da APK: {apk_path}", file=sys.stderr)
+            try:
+                result = subprocess.run(
+                    ["aapt", "dump", "badging", apk_path],
+                    capture_output=True, text=True, timeout=30
+                )
+                
+                activities = []
+                for line in result.stdout.split('\n'):
+                    if 'activity' in line.lower():
+                        # Estrae nomi Activity dal dump aapt
+                        match = re.search(r"name='([^']+)'", line)
+                        if match:
+                            activities.append(match.group(1))
+                            
+                if activities:
+                    unique_activities = list(set(activities))  # Rimuove duplicati
+                    print(f"✅ Trovate {len(unique_activities)} activity da AAPT", file=sys.stderr)
+                    return unique_activities
+                    
+            except FileNotFoundError:
+                print("⚠️ aapt non installato", file=sys.stderr)
+            except Exception as e:
+                print(f"⚠️ Errore AAPT: {e}", file=sys.stderr)
+        else:
+            print(f"⚠️ APK non trovato: {apk_path}", file=sys.stderr)
             
-        # Fallback: usa lista manuale o rilevamento dinamico
+        # METODO 4: Fallback su lista manuale esistente
         return load_manual_activities_list()
         
     except Exception as e:
-        print(f"⚠️ Errore nell'analisi APK: {e}", file=sys.stderr)
+        print(f"⚠️ Errore generale nell'analisi activity: {e}", file=sys.stderr)
         return load_manual_activities_list()
 
 def load_manual_activities_list(file_path: str = "test/coverage/all_activities.txt"):

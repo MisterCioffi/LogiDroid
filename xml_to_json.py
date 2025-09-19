@@ -74,7 +74,7 @@ def extract_elements(node, elements, text_nodes):
     is_edittext = any(field_type in class_name for field_type in ['edittext', 'autocomplete', 'textinput'])
     is_textview = 'textview' in class_name and text and not clickable and not is_edittext
     
-    # ✨ NUOVO: Se è un pulsante clickable senza testo, cerca testo nei figli
+    # Se è un pulsante clickable senza testo, cerca testo nei figli
     if is_button and clickable and not text:
         child_text = find_text_in_children(node)
         if child_text:
